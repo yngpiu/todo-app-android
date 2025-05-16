@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.FirebaseAuth;
 import com.haui.noteapp.R;
 import com.haui.noteapp.databinding.FragmentCategoryBinding;
 import com.haui.noteapp.listener.OnCategoryActionListener;
@@ -24,7 +23,6 @@ public class CategoryFragment extends Fragment {
 
     private FragmentCategoryBinding binding;
     private CategoryViewModel categoryViewModel;
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -40,7 +38,7 @@ public class CategoryFragment extends Fragment {
     }
 
     private void showAddCategoryDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Thêm danh mục");
 
         View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_add_category, null);
@@ -49,10 +47,9 @@ public class CategoryFragment extends Fragment {
 
         builder.setPositiveButton("Thêm", ((dialog, which) ->
         {
-            String name = input.getText().toString().trim();
-            if (name.isEmpty()) {
-                Toast.makeText(getContext(), "Vui lòng nhập tên danh mục", Toast.LENGTH_SHORT).show();
-                return;
+            String name = "";
+            if (input.getText() != null) {
+                name = input.getText().toString().trim();
             }
             Category category = new Category();
             category.setName(name);
@@ -69,9 +66,7 @@ public class CategoryFragment extends Fragment {
     }
 
     private void initObserve() {
-        categoryViewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
-            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
-        });
+
         categoryViewModel.getCategoryList().observe(getViewLifecycleOwner(), categories -> {
             binding.recyclerCategory.setVisibility(View.GONE);
             binding.progressBar.setVisibility(View.VISIBLE);
@@ -87,7 +82,10 @@ public class CategoryFragment extends Fragment {
 
                     builder.setView(view);
                     builder.setPositiveButton("Lưu", (dialog, which) -> {
-                        String newName = input.getText().toString().trim();
+                        String newName = "";
+                        if (input.getText() != null) {
+                            newName = input.getText().toString().trim();
+                        }
                         if (newName.isEmpty()) {
                             Toast.makeText(getContext(), "Tên danh mục không được để trống", Toast.LENGTH_SHORT).show();
                             return;
@@ -109,9 +107,7 @@ public class CategoryFragment extends Fragment {
                             .setTitle("Xoá danh mục")
                             .setMessage("Bạn có chắc muốn xoá danh mục [" + category.getName() + "] không?")
                             .setPositiveButton("Xoá", ((dialog, which) ->
-                            {
-                                categoryViewModel.deleteCategory(category.getId());
-                            })).setNegativeButton("Huỷ", null)
+                                    categoryViewModel.deleteCategory(category.getId()))).setNegativeButton("Huỷ", null)
                             .show();
                 }
             });
@@ -120,21 +116,20 @@ public class CategoryFragment extends Fragment {
             binding.recyclerCategory.setVisibility(View.VISIBLE);
             binding.progressBar.setVisibility(View.GONE);
         });
-        categoryViewModel.getAddSuccess().observe(getViewLifecycleOwner(), success -> {
-            if (success) {
-                Toast.makeText(getContext(), "Đã thêm danh mục", Toast.LENGTH_SHORT).show();
+        categoryViewModel.getErrorMessage().observe(getViewLifecycleOwner(), event -> {
+            String message = event.getContentIfNotHandled();
+            if (message != null) {
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
-        categoryViewModel.getUpdateSuccess().observe(getViewLifecycleOwner(), success -> {
-            if (success) {
-                Toast.makeText(getContext(), "Đã sửa danh mục", Toast.LENGTH_SHORT).show();
+
+        categoryViewModel.getActionMessage().observe(getViewLifecycleOwner(), event -> {
+            String message = event.getContentIfNotHandled();
+            if (message != null) {
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
-        categoryViewModel.getDeleteSuccess().observe(getViewLifecycleOwner(), success -> {
-            if (success) {
-                Toast.makeText(getContext(), "Đã xoá danh mục", Toast.LENGTH_SHORT).show();
-            }
-        });
+
     }
 
     private void initViewModel() {

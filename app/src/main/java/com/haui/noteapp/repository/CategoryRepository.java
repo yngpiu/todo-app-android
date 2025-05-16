@@ -1,7 +1,5 @@
 package com.haui.noteapp.repository;
 
-import android.util.Log;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -12,28 +10,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryRepository {
-    private final IFirebaseCallbackListener<List<Category>> iFirebaseCallbackListener;
-    private final FirebaseFirestore db;
+
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-    public CategoryRepository(IFirebaseCallbackListener<List<Category>> iFirebaseCallbackListener) {
-        this.iFirebaseCallbackListener = iFirebaseCallbackListener;
-        db = FirebaseFirestore.getInstance();
-        loadData();
-    }
+    public void loadData(IFirebaseCallbackListener<List<Category>> callback) {
+        String userId = getUserId(callback);
+        if (userId == null) return;
 
-    public void loadData() {
-        String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
         db.collection("categories")
                 .whereEqualTo("userId", userId)
                 .orderBy("name", Query.Direction.ASCENDING)
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
-                        iFirebaseCallbackListener.onFirebaseLoadFailed(error.getMessage());
-                        Log.d(
-                                "CategoryRepository",
-                                "Error getting documents: " + error.getMessage()
-                        );
+                        callback.onFirebaseLoadFailed(error.getMessage());
+                        return;
+                    }
+
+                    if (value == null) {
+                        callback.onFirebaseLoadFailed("Dữ liệu không tồn tại");
                         return;
                     }
 
@@ -43,34 +38,42 @@ public class CategoryRepository {
                         category.setId(doc.getId());
                         categories.add(category);
                     }
-
-                    iFirebaseCallbackListener.onFirebaseLoadSuccess(categories);
+                    callback.onFirebaseLoadSuccess(categories);
                 });
     }
 
-
-    public void addCategory(Category category, IFirebaseCallbackListener<Void> listener) {
-        String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+    public void addCategory(Category category, IFirebaseCallbackListener<Void> callback) {
+        String userId = getUserId(callback);
+        if (userId == null) return;
 
         category.setUserId(userId);
         db.collection("categories").add(category)
-                .addOnSuccessListener(documentReference -> {
-                    category.setId(documentReference.getId());
-                    listener.onFirebaseLoadSuccess(null);
-                }).addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
+                .addOnSuccessListener(ref -> {
+                    category.setId(ref.getId());
+                    callback.onFirebaseLoadSuccess(null);
+                })
+                .addOnFailureListener(e -> callback.onFirebaseLoadFailed(e.getMessage()));
     }
 
-    public void updateCategory(Category category, IFirebaseCallbackListener<Void> listener) {
-        db.collection("categories")
-                .document(category.getId()).set(category)
-                .addOnSuccessListener(unused -> listener.onFirebaseLoadSuccess(null))
-                .addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
+    public void updateCategory(Category category, IFirebaseCallbackListener<Void> callback) {
+        db.collection("categories").document(category.getId())
+                .set(category)
+                .addOnSuccessListener(unused -> callback.onFirebaseLoadSuccess(null))
+                .addOnFailureListener(e -> callback.onFirebaseLoadFailed(e.getMessage()));
     }
 
-    public void deleteCategory(String categoryId, IFirebaseCallbackListener<Void> listener) {
-        db.collection("categories")
-                .document(categoryId).delete()
-                .addOnSuccessListener(unused -> listener.onFirebaseLoadSuccess(null))
-                .addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
+    public void deleteCategory(String categoryId, IFirebaseCallbackListener<Void> callback) {
+        db.collection("categories").document(categoryId)
+                .delete()
+                .addOnSuccessListener(unused -> callback.onFirebaseLoadSuccess(null))
+                .addOnFailureListener(e -> callback.onFirebaseLoadFailed(e.getMessage()));
+    }
+
+    private String getUserId(IFirebaseCallbackListener<?> callback) {
+        if (mAuth.getCurrentUser() == null) {
+            callback.onFirebaseLoadFailed("Vui lòng đăng nhập.");
+            return null;
+        }
+        return mAuth.getCurrentUser().getUid();
     }
 }
