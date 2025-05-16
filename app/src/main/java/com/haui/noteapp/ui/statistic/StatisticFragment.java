@@ -1,4 +1,4 @@
-package com.haui.noteapp.ui.notifications;
+package com.haui.noteapp.ui.statistic;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,22 +10,22 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.haui.noteapp.databinding.FragmentNotificationsBinding;
+import com.haui.noteapp.databinding.FragmentStatisticBinding;
 
-public class NotificationsFragment extends Fragment {
+public class StatisticFragment extends Fragment {
 
-    private FragmentNotificationsBinding binding;
+    private FragmentStatisticBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        NotificationsViewModel notificationsViewModel =
-                new ViewModelProvider(this).get(NotificationsViewModel.class);
+        StatisticViewModel statisticViewModel =
+                new ViewModelProvider(this).get(StatisticViewModel.class);
 
-        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+        binding = FragmentStatisticBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textNotifications;
-        notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        final TextView textView = binding.textStatistic;
+        statisticViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
