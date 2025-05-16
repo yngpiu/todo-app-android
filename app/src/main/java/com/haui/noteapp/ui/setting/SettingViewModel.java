@@ -1,19 +1,20 @@
 package com.haui.noteapp.ui.setting;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.haui.noteapp.repository.AuthRepository;
+import com.haui.noteapp.repository.UserRepository;
 
 public class SettingViewModel extends ViewModel {
-    private final AuthRepository authRepository;
-    private LiveData<FirebaseUser> userLiveData;
-
+    private final UserRepository userRepository;
+    private final MutableLiveData<FirebaseUser> userLiveData = new MutableLiveData<>();
 
     public SettingViewModel() {
-        authRepository = new AuthRepository();
-        userLiveData = authRepository.getUserLiveData();
+        userRepository = new UserRepository();
+        userLiveData.setValue(FirebaseAuth.getInstance().getCurrentUser());
     }
 
     public LiveData<FirebaseUser> getUserLiveData() {
@@ -21,6 +22,8 @@ public class SettingViewModel extends ViewModel {
     }
 
     public void signOut() {
-        authRepository.signOut();
+        userRepository.signOut();
+        userLiveData.setValue(null);
     }
+
 }

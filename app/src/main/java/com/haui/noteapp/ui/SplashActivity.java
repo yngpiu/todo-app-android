@@ -6,22 +6,21 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.haui.noteapp.MainActivity;
-import com.haui.noteapp.repository.AuthRepository;
 import com.haui.noteapp.ui.login.LoginActivity;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-    private AuthRepository authRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        authRepository = new AuthRepository();
 
 
-        if (authRepository.isLogged()) {
+        if (mAuth.getCurrentUser() != null) {
             startActivity(new Intent(this, MainActivity.class));
         } else {
             startActivity(new Intent(this, LoginActivity.class));

@@ -43,4 +43,8 @@ public class UserRepository {
                 })
                 .addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
     }
+
+    public void signOut() {
+        mAuth.signOut();
+    }
 }
