@@ -5,6 +5,9 @@ public class Category {
     private String name;
     private String colorHex;
 
+    public Category() {
+
+    }
     public Category(String id, String name, String colorHex) {
         this.id = id;
         this.name = name;
@@ -29,5 +32,8 @@ public class Category {
 
     public String getColorHex() {
         return colorHex;
+    }
+    public void setColorHex(String colorHex) {
+        this.colorHex = colorHex;
     }
 }

@@ -37,6 +37,15 @@ public class CategoryRepository {
         });
     }
 
+    public void addCategory(Category category, DataCallback<Void> callback) {
+        DatabaseReference newRef = categoryRef.push();
+        category.setId(newRef.getKey());
+        newRef.setValue(category)
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(e -> callback.onError(e));
+    }
+
+
     public interface DataCallback<T> {
         void onSuccess(T data);
         void onError(Exception e);

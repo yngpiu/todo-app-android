@@ -21,6 +21,19 @@ public class CategoryViewModel extends ViewModel {
         return categoriesLiveData;
     }
 
+    public void addCategory(Category category) {
+        repository.addCategory(category, new CategoryRepository.DataCallback<Void>() {
+            @Override
+            public void onSuccess(Void data) {
+                // Có thể reload hoặc xử lý gì khác nếu cần
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // Log hoặc notify lỗi
+            }
+        });
+    }
     public void loadCategories() {
         repository.getCategories(new CategoryRepository.DataCallback<List<Category>>() {
             @Override
