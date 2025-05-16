@@ -1,38 +1,38 @@
 package com.haui.noteapp.ui.login;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseUser;
-import com.haui.noteapp.repository.AuthRepository;
+import com.haui.noteapp.listener.IFirebaseCallbackListener;
+import com.haui.noteapp.repository.UserRepository;
 
 public class LoginViewModel extends ViewModel {
-    private AuthRepository authRepository;
-    private LiveData<FirebaseUser> userLiveData;
-    private LiveData<String> errorLiveData;
-    private LiveData<Boolean> loadingLiveData;
 
+    private final MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>();
+    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final UserRepository userRepository = new UserRepository();
 
-    public LoginViewModel() {
-        authRepository = new AuthRepository();
-        userLiveData = authRepository.getUserLiveData();
-        errorLiveData = authRepository.getErrorLiveData();
-        loadingLiveData = authRepository.getLoadingLiveData();
+    public LiveData<Boolean> getLoginSuccess() {
+        return loginSuccess;
+    }
+
+    public LiveData<String> getErrorMessage() {
+        return errorMessage;
     }
 
     public void login(String email, String password) {
-        authRepository.login(email, password);
-    }
+        userRepository.login(email, password, new IFirebaseCallbackListener<FirebaseUser>() {
+            @Override
+            public void onFirebaseLoadSuccess(FirebaseUser data) {
+                loginSuccess.setValue(true);
+            }
 
-    public LiveData<FirebaseUser> getUserLiveData() {
-        return userLiveData;
-    }
-
-    public LiveData<String> getErrorLiveData() {
-        return errorLiveData;
-    }
-
-    public LiveData<Boolean> getLoadingLiveData() {
-        return loadingLiveData;
+            @Override
+            public void onFirebaseLoadFailed(String error) {
+                errorMessage.setValue(error);
+            }
+        });
     }
 }

@@ -22,26 +22,27 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
         loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
-        loginViewModel.getUserLiveData().observe(this, firebaseUser -> {
-            if (firebaseUser != null) {
-                startActivity(new Intent(this, MainActivity.class));
-            }
-        });
-
-        loginViewModel.getErrorLiveData().observe(this, error -> {
-            if (error != null) {
-                Toast.makeText(LoginActivity.this, error, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        loginViewModel.getLoadingLiveData().observe(this, isLoading -> {
-            binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-            binding.loginButton.setEnabled(!isLoading);
-        });
-
+        initObservers();
         setupListeners();
+    }
+
+    private void initObservers() {
+        loginViewModel.getLoginSuccess().observe(this, success -> {
+            binding.progressBar.setVisibility(View.GONE);
+            if (success) {
+                Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+            }
+        });
+
+        loginViewModel.getErrorMessage().observe(this, error -> {
+            binding.progressBar.setVisibility(View.GONE);
+            Toast.makeText(this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void setupListeners() {
@@ -70,11 +71,13 @@ public class LoginActivity extends AppCompatActivity {
 
             if (!isValid) return;
 
-            loginViewModel.login(email,password);
+            binding.progressBar.setVisibility(View.VISIBLE);
+
+            loginViewModel.login(email, password);
         });
 
         binding.signupTextView.setOnClickListener(v -> {
-             startActivity(new Intent(this, SignupActivity.class));
+            startActivity(new Intent(this, SignupActivity.class));
         });
     }
 }

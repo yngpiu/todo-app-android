@@ -1,6 +1,7 @@
 package com.haui.noteapp.repository;
 
 import androidx.annotation.NonNull;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -23,6 +24,19 @@ public class UserRepository {
                         userRef.child(uid).setValue(user)
                                 .addOnSuccessListener(unused -> listener.onFirebaseLoadSuccess(null))
                                 .addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
+                    } else {
+                        listener.onFirebaseLoadFailed("FirebaseUser is null");
+                    }
+                })
+                .addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
+    }
+
+    public void login(String email, String password, IFirebaseCallbackListener<FirebaseUser> listener) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener(authResult -> {
+                    FirebaseUser firebaseUser = authResult.getUser();
+                    if (firebaseUser != null) {
+                        listener.onFirebaseLoadSuccess(firebaseUser);
                     } else {
                         listener.onFirebaseLoadFailed("FirebaseUser is null");
                     }
