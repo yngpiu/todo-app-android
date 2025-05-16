@@ -34,24 +34,34 @@ public class SignupActivity extends AppCompatActivity {
         signupViewModel.getSignUpSuccess().observe(this, success -> {
             binding.progressBar.setVisibility(View.GONE);
             if (success) {
-                Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(this, MainActivity.class));
                 finish();
             }
         });
 
-        signupViewModel.getErrorMessage().observe(this, error -> {
-            binding.progressBar.setVisibility(View.GONE);
-            Toast.makeText(this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+        signupViewModel.getErrorMessage().observe(this, event -> {
+            String message = event.getContentIfNotHandled();
+            if (message != null) {
+                binding.progressBar.setVisibility(View.GONE);
+                Toast.makeText(this, "Lỗi: " + message, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        signupViewModel.getActionMessage().observe(this, event -> {
+            String message = event.getContentIfNotHandled();
+            if (message != null) {
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
     private void setupListeners() {
         binding.registerButton.setOnClickListener(v -> {
-            String email = binding.emailEditText.getText().toString().trim();
-            String password = binding.passwordEditText.getText().toString().trim();
-            String confirmPassword = binding.confirmPasswordEditText.getText().toString().trim();
-            String displayName = binding.displayNameEditText.getText().toString().trim();
+            String email = String.valueOf(binding.emailEditText.getText()).trim();
+            String password = String.valueOf(binding.passwordEditText.getText()).trim();
+            String confirmPassword = String.valueOf(binding.confirmPasswordEditText.getText()).trim();
+            String displayName = String.valueOf(binding.displayNameEditText.getText()).trim();
+
 
             boolean isValid = true;
 
@@ -86,7 +96,7 @@ public class SignupActivity extends AppCompatActivity {
             }
 
             if (confirmPassword.isEmpty()) {
-                binding.confirmPasswordInputLayout.setError("Vui lòng nhập xác nhận mật khẩu");
+                binding.confirmPasswordInputLayout.setError("Vui lòng xác nhận mật khẩu");
                 isValid = false;
             } else if (!password.equals(confirmPassword)) {
                 binding.confirmPasswordInputLayout.setError("Mật khẩu xác nhận không khớp");
@@ -105,8 +115,6 @@ public class SignupActivity extends AppCompatActivity {
             signupViewModel.signUp(email, password, user);
         });
 
-        binding.loginTextView.setOnClickListener(v -> {
-            startActivity(new Intent(this, LoginActivity.class));
-        });
+        binding.loginTextView.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
     }
 }

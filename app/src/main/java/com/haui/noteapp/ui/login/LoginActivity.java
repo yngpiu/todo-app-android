@@ -33,22 +33,31 @@ public class LoginActivity extends AppCompatActivity {
         loginViewModel.getLoginSuccess().observe(this, success -> {
             binding.progressBar.setVisibility(View.GONE);
             if (success) {
-                Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(this, MainActivity.class));
                 finish();
             }
         });
 
-        loginViewModel.getErrorMessage().observe(this, error -> {
-            binding.progressBar.setVisibility(View.GONE);
-            Toast.makeText(this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+        loginViewModel.getErrorMessage().observe(this, event -> {
+            String message = event.getContentIfNotHandled();
+            if (message != null) {
+                binding.progressBar.setVisibility(View.GONE);
+                Toast.makeText(this, "Lỗi: " + message, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        loginViewModel.getActionMessage().observe(this, event -> {
+            String message = event.getContentIfNotHandled();
+            if (message != null) {
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
     private void setupListeners() {
         binding.loginButton.setOnClickListener(v -> {
-            String email = binding.emailEditText.getText().toString().trim();
-            String password = binding.passwordEditText.getText().toString().trim();
+            String email = String.valueOf(binding.emailEditText.getText()).trim();
+            String password = String.valueOf(binding.passwordEditText.getText()).trim();
 
             boolean isValid = true;
 
@@ -76,8 +85,6 @@ public class LoginActivity extends AppCompatActivity {
             loginViewModel.login(email, password);
         });
 
-        binding.signupTextView.setOnClickListener(v -> {
-            startActivity(new Intent(this, SignupActivity.class));
-        });
+        binding.signupTextView.setOnClickListener(v -> startActivity(new Intent(this, SignupActivity.class)));
     }
 }
