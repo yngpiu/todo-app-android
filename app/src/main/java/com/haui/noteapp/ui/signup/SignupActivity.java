@@ -10,8 +10,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.haui.noteapp.MainActivity;
 import com.haui.noteapp.databinding.ActivitySignupBinding;
+import com.haui.noteapp.model.User;
 import com.haui.noteapp.ui.login.LoginActivity;
-
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -26,25 +26,24 @@ public class SignupActivity extends AppCompatActivity {
 
         signupViewModel = new ViewModelProvider(this).get(SignupViewModel.class);
 
-
-        signupViewModel.getUserLiveData().observe(this, firebaseUser -> {
-            if (firebaseUser != null) {
-                startActivity(new Intent(this, MainActivity.class));
-            }
-        });
-
-        signupViewModel.getErrorLiveData().observe(this, error -> {
-            if (error != null) {
-                Toast.makeText(SignupActivity.this, error, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        signupViewModel.getLoadingLiveData().observe(this, isLoading -> {
-            binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-            binding.registerButton.setEnabled(!isLoading);
-        });
-
+        initObservers();
         setupListeners();
+    }
+
+    private void initObservers() {
+        signupViewModel.getSignUpSuccess().observe(this, success -> {
+            binding.progressBar.setVisibility(View.GONE);
+            if (success) {
+                Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+            }
+        });
+
+        signupViewModel.getErrorMessage().observe(this, error -> {
+            binding.progressBar.setVisibility(View.GONE);
+            Toast.makeText(this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void setupListeners() {
@@ -98,14 +97,16 @@ public class SignupActivity extends AppCompatActivity {
 
             if (!isValid) return;
 
-            signupViewModel.signup(email, password, displayName);
+            binding.progressBar.setVisibility(View.VISIBLE);
 
+            User user = new User();
+            user.setDisplayName(displayName);
+
+            signupViewModel.signUp(email, password, user);
         });
 
         binding.loginTextView.setOnClickListener(v -> {
             startActivity(new Intent(this, LoginActivity.class));
         });
     }
-
-
 }

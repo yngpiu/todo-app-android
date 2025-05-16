@@ -1,37 +1,37 @@
 package com.haui.noteapp.ui.signup;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.firebase.auth.FirebaseUser;
-import com.haui.noteapp.repository.AuthRepository;
+import com.haui.noteapp.listener.IFirebaseCallbackListener;
+import com.haui.noteapp.model.User;
+import com.haui.noteapp.repository.UserRepository;
 
 public class SignupViewModel extends ViewModel {
-    private AuthRepository authRepository;
-    private LiveData<FirebaseUser> userLiveData;
-    private LiveData<String> errorLiveData;
-    private LiveData<Boolean> loadingLiveData;
+    private final MutableLiveData<Boolean> signUpSuccess = new MutableLiveData<>();
+    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final UserRepository userRepository = new UserRepository();
 
-    public SignupViewModel() {
-        authRepository = new AuthRepository();
-        userLiveData = authRepository.getUserLiveData();
-        errorLiveData = authRepository.getErrorLiveData();
-        loadingLiveData = authRepository.getLoadingLiveData();
+    public void signUp(String email, String password, User user) {
+        userRepository.signUp(email, password, user, new IFirebaseCallbackListener<Void>() {
+            @Override
+            public void onFirebaseLoadSuccess(Void unused) {
+                signUpSuccess.postValue(true);
+            }
+
+            @Override
+            public void onFirebaseLoadFailed(String message) {
+                errorMessage.postValue(message);
+            }
+        });
     }
 
-    public void signup(String email, String password, String displayName) {
-        authRepository.signup(email, password, displayName);
+    public LiveData<Boolean> getSignUpSuccess() {
+        return signUpSuccess;
     }
 
-    public LiveData<FirebaseUser> getUserLiveData() {
-        return userLiveData;
-    }
-
-    public LiveData<String> getErrorLiveData() {
-        return errorLiveData;
-    }
-
-    public LiveData<Boolean> getLoadingLiveData() {
-        return loadingLiveData;
+    public LiveData<String> getErrorMessage() {
+        return errorMessage;
     }
 }

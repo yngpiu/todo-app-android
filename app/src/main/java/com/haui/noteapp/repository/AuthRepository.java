@@ -9,7 +9,6 @@ import com.haui.noteapp.model.User;
 
 public class AuthRepository {
     private final FirebaseAuth mAuth;
-    private final UserRepository userRepository;
     private final MutableLiveData<FirebaseUser> userLiveData;
     private final MutableLiveData<String> errorLiveData;
     private final MutableLiveData<Boolean> loadingLiveData;
@@ -17,7 +16,6 @@ public class AuthRepository {
 
     public AuthRepository() {
         mAuth = FirebaseAuth.getInstance();
-        userRepository = new UserRepository();
         userLiveData = new MutableLiveData<>();
         errorLiveData = new MutableLiveData<>();
         loadingLiveData = new MutableLiveData<>();
@@ -61,7 +59,6 @@ public class AuthRepository {
                 FirebaseUser firebaseUser = mAuth.getCurrentUser();
                 if (firebaseUser != null) {
                     User user = new User(firebaseUser.getUid(), email, displayName);
-                    userRepository.createUser(user);
                     userLiveData.postValue(firebaseUser);
                 }
                 loadingLiveData.postValue(false);
