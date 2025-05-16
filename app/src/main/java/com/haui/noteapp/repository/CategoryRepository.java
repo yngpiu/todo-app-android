@@ -1,5 +1,6 @@
 package com.haui.noteapp.repository;
 
+
 import androidx.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
@@ -7,47 +8,36 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.haui.noteapp.listener.IFirebaseCallbackListener;
 import com.haui.noteapp.model.Category;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryRepository {
-    private DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("categories");
+    private final IFirebaseCallbackListener<List<Category>> iFirebaseCallbackListener;
+    private final DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("categories");
 
-    public void getCategories(DataCallback<List<Category>> callback) {
-        categoryRef.addValueEventListener(new ValueEventListener() {
+    public CategoryRepository(IFirebaseCallbackListener<List<Category>> iFirebaseCallbackListener) {
+        this.iFirebaseCallbackListener = iFirebaseCallbackListener;
+    }
+
+    public  void loadData() {
+        List<Category> categories = new ArrayList<>();
+        categoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<Category> categories = new ArrayList<>();
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    Category category = child.getValue(Category.class);
-                    if (category != null) {
-                        category.setId(child.getKey());
-                        categories.add(category);
-                    }
+                for(DataSnapshot itemSnapshot : snapshot.getChildren()) {
+                    Category model = itemSnapshot.getValue(Category.class);
+                    categories.add(model);
                 }
-                callback.onSuccess(categories);
+                iFirebaseCallbackListener.onFirebaseLoadSuccess(categories);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                callback.onError(error.toException());
+                iFirebaseCallbackListener.onFirebaseLoadFailed(error.getMessage());
             }
         });
-    }
-
-    public void addCategory(Category category, DataCallback<Void> callback) {
-        DatabaseReference newRef = categoryRef.push();
-        category.setId(newRef.getKey());
-        newRef.setValue(category)
-                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
-                .addOnFailureListener(e -> callback.onError(e));
-    }
-
-
-    public interface DataCallback<T> {
-        void onSuccess(T data);
-        void onError(Exception e);
     }
 }

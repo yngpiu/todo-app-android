@@ -16,12 +16,12 @@
         android:layout_height="wrap_content"
         android:padding="12dp">
 
-        <!-- Color dot -->
         <ImageView
-            android:id="@+id/colorDot"
+            android:id="@+id/color_dot"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginEnd="12dp"
+            android:contentDescription="circle"
             android:src="@drawable/ic_circle_solid"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -29,7 +29,7 @@
 
         <!-- Category name -->
         <TextView
-            android:id="@+id/categoryName"
+            android:id="@+id/category_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -37,14 +37,14 @@
             android:textColor="@android:color/black"
             android:textSize="16sp"
             android:layout_marginStart="10dp"
-            app:layout_constraintStart_toEndOf="@id/colorDot"
-            app:layout_constraintEnd_toStartOf="@id/editButton"
+            app:layout_constraintStart_toEndOf="@id/color_dot"
+            app:layout_constraintEnd_toStartOf="@id/edit_button"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
         <!-- Edit button -->
         <ImageButton
-            android:id="@+id/editButton"
+            android:id="@+id/edit_button"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginEnd="4dp"
@@ -52,13 +52,13 @@
             android:contentDescription="Sửa"
             android:src="@drawable/ic_edit"
             app:tint="#fcb503"
-            app:layout_constraintEnd_toStartOf="@id/deleteButton"
+            app:layout_constraintEnd_toStartOf="@id/delete_button"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
         <!-- Delete button -->
         <ImageButton
-            android:id="@+id/deleteButton"
+            android:id="@+id/delete_button"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="?attr/selectableItemBackgroundBorderless"
