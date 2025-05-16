@@ -34,7 +34,6 @@ public class CategoryFragment extends Fragment {
         initViewModel();
         initObserve();
 
-        categoryViewModel.loadData();
         binding.fabAddTask.setOnClickListener(v -> showAddCategoryDialog());
 
         return binding.getRoot();
@@ -140,7 +139,6 @@ public class CategoryFragment extends Fragment {
 
     private void initViewModel() {
         categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
-        categoryViewModel.loadData();
     }
 
     @Override

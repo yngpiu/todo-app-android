@@ -22,6 +22,12 @@ public class CategoryViewModel extends ViewModel implements IFirebaseCallbackLis
     private final MutableLiveData<Boolean> updateSuccess = new MutableLiveData<>();
     private final MutableLiveData<Boolean> deleteSuccess = new MutableLiveData<>();
 
+    private final CategoryRepository categoryRepository;
+
+    public CategoryViewModel() {
+        categoryRepository = new CategoryRepository(this);
+    }
+
     public LiveData<Boolean> getAddSuccess() {
         return addSuccess;
     }
@@ -34,14 +40,12 @@ public class CategoryViewModel extends ViewModel implements IFirebaseCallbackLis
         return updateSuccess;
     }
 
-    private CategoryRepository categoryRepository;
-
-    public CategoryViewModel() {
-        categoryRepository = new CategoryRepository(this);
+    public LiveData<List<Category>> getCategoryList() {
+        return mutableCategoryList;
     }
 
-    public void loadData() {
-        categoryRepository.loadData();
+    public LiveData<String> getErrorMessage() {
+        return errorMessage;
     }
 
     public void addCategory(Category category) {
@@ -49,7 +53,6 @@ public class CategoryViewModel extends ViewModel implements IFirebaseCallbackLis
             @Override
             public void onFirebaseLoadSuccess(Void items) {
                 addSuccess.postValue(true);
-                loadData();
             }
 
             @Override
@@ -59,13 +62,11 @@ public class CategoryViewModel extends ViewModel implements IFirebaseCallbackLis
         });
     }
 
-
     public void deleteCategory(String categoryId) {
         categoryRepository.deleteCategory(categoryId, new IFirebaseCallbackListener<Void>() {
             @Override
             public void onFirebaseLoadSuccess(Void unused) {
                 deleteSuccess.postValue(true);
-                loadData();
             }
 
             @Override
@@ -79,7 +80,6 @@ public class CategoryViewModel extends ViewModel implements IFirebaseCallbackLis
         categoryRepository.updateCategory(category, new IFirebaseCallbackListener<Void>() {
             @Override
             public void onFirebaseLoadSuccess(Void items) {
-                loadData();
                 updateSuccess.postValue(true);
             }
 
@@ -88,15 +88,6 @@ public class CategoryViewModel extends ViewModel implements IFirebaseCallbackLis
                 errorMessage.postValue(message);
             }
         });
-    }
-
-
-    public LiveData<List<Category>> getCategoryList() {
-        return mutableCategoryList;
-    }
-
-    public LiveData<String> getErrorMessage() {
-        return errorMessage;
     }
 
     @Override

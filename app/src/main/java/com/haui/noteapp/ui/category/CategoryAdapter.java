@@ -1,17 +1,11 @@
 package com.haui.noteapp.ui.category;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.haui.noteapp.R;
 import com.haui.noteapp.databinding.ItemCategoryBinding;
 import com.haui.noteapp.listener.OnCategoryActionListener;
 import com.haui.noteapp.model.Category;
@@ -19,7 +13,7 @@ import com.haui.noteapp.model.Category;
 import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
-    private List<Category> categories;
+    private final List<Category> categories;
     private final OnCategoryActionListener listener;
 
     public CategoryAdapter(List<Category> categories, OnCategoryActionListener listener) {
@@ -40,12 +34,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         Category category = categories.get(position);
         holder.binding.categoryName.setText(category.getName());
         holder.binding.colorDot.setColorFilter(android.graphics.Color.parseColor(category.getColorHex()));
-        holder.binding.deleteButton.setOnClickListener(v -> {
-            listener.onDelete(category);
-        });
-        holder.binding.editButton.setOnClickListener(v -> {
-            listener.onUpdate(category);
-        });
+        holder.binding.deleteButton.setOnClickListener(v -> listener.onDelete(category));
+        holder.binding.editButton.setOnClickListener(v -> listener.onUpdate(category));
     }
 
     @Override

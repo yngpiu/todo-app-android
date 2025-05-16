@@ -1,17 +1,23 @@
 package com.haui.noteapp.repository;
 
-import androidx.annotation.NonNull;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.haui.noteapp.listener.IFirebaseCallbackListener;
 import com.haui.noteapp.model.User;
 
 public class UserRepository {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private final DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users");
+    private final FirebaseFirestore db;
+
+    public UserRepository() {
+        db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
+    }
 
     public void signUp(String email, String password, User user, IFirebaseCallbackListener<Void> listener) {
         mAuth.createUserWithEmailAndPassword(email, password)
@@ -21,7 +27,7 @@ public class UserRepository {
                         String uid = firebaseUser.getUid();
                         user.setId(uid);
                         user.setEmail(email);
-                        userRef.child(uid).setValue(user)
+                        db.collection("users").document(uid).set(user)
                                 .addOnSuccessListener(unused -> listener.onFirebaseLoadSuccess(null))
                                 .addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
                     } else {

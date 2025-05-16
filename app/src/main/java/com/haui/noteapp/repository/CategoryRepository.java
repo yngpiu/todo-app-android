@@ -1,14 +1,10 @@
 package com.haui.noteapp.repository;
 
-
-import androidx.annotation.NonNull;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.haui.noteapp.listener.IFirebaseCallbackListener;
 import com.haui.noteapp.model.Category;
 
@@ -17,57 +13,64 @@ import java.util.List;
 
 public class CategoryRepository {
     private final IFirebaseCallbackListener<List<Category>> iFirebaseCallbackListener;
-    private final DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("categories");
+    private final FirebaseFirestore db;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public CategoryRepository(IFirebaseCallbackListener<List<Category>> iFirebaseCallbackListener) {
         this.iFirebaseCallbackListener = iFirebaseCallbackListener;
+        db = FirebaseFirestore.getInstance();
+        loadData();
     }
 
     public void loadData() {
-        List<Category> categories = new ArrayList<>();
-        categoryRef.orderByChild("userId").equalTo(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
-                    Category model = itemSnapshot.getValue(Category.class);
-                    categories.add(model);
-                }
-                iFirebaseCallbackListener.onFirebaseLoadSuccess(categories);
-            }
+        String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+        db.collection("categories")
+                .whereEqualTo("userId", userId)
+                .orderBy("name", Query.Direction.ASCENDING)
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        iFirebaseCallbackListener.onFirebaseLoadFailed(error.getMessage());
+                        Log.d(
+                                "CategoryRepository",
+                                "Error getting documents: " + error.getMessage()
+                        );
+                        return;
+                    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                iFirebaseCallbackListener.onFirebaseLoadFailed(error.getMessage());
-            }
-        });
+                    List<Category> categories = new ArrayList<>();
+                    for (var doc : value) {
+                        Category category = doc.toObject(Category.class);
+                        category.setId(doc.getId());
+                        categories.add(category);
+                    }
+
+                    iFirebaseCallbackListener.onFirebaseLoadSuccess(categories);
+                });
     }
 
+
     public void addCategory(Category category, IFirebaseCallbackListener<Void> listener) {
-        category.setUserId(mAuth.getCurrentUser().getUid());
-        String key = categoryRef.push().getKey();
-        if (key == null) {
-            listener.onFirebaseLoadFailed("Không thể thêm danh mục");
-            return;
-        }
-        category.setId(key);
-        categoryRef.child(key).setValue(category).addOnSuccessListener(unused -> {
-            listener.onFirebaseLoadSuccess(null);
-        }).addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
+        String userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
+
+        category.setUserId(userId);
+        db.collection("categories").add(category)
+                .addOnSuccessListener(documentReference -> {
+                    category.setId(documentReference.getId());
+                    listener.onFirebaseLoadSuccess(null);
+                }).addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
     }
 
     public void updateCategory(Category category, IFirebaseCallbackListener<Void> listener) {
-        categoryRef.child(category.getId())
-                .setValue(category)
+        db.collection("categories")
+                .document(category.getId()).set(category)
                 .addOnSuccessListener(unused -> listener.onFirebaseLoadSuccess(null))
                 .addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
     }
 
     public void deleteCategory(String categoryId, IFirebaseCallbackListener<Void> listener) {
-        categoryRef.child(categoryId)
-                .removeValue()
+        db.collection("categories")
+                .document(categoryId).delete()
                 .addOnSuccessListener(unused -> listener.onFirebaseLoadSuccess(null))
                 .addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
     }
-
 }
