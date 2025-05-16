@@ -43,6 +43,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         holder.binding.deleteButton.setOnClickListener(v -> {
             listener.onDelete(category);
         });
+        holder.binding.editButton.setOnClickListener(v -> {
+            listener.onUpdate(category);
+        });
     }
 
     @Override

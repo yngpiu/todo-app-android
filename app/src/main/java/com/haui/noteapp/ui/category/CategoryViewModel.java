@@ -19,9 +19,19 @@ public class CategoryViewModel extends ViewModel implements IFirebaseCallbackLis
     private final MutableLiveData<List<Category>> mutableCategoryList = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> addSuccess = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> updateSuccess = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> deleteSuccess = new MutableLiveData<>();
 
     public LiveData<Boolean> getAddSuccess() {
         return addSuccess;
+    }
+
+    public LiveData<Boolean> getDeleteSuccess() {
+        return deleteSuccess;
+    }
+
+    public LiveData<Boolean> getUpdateSuccess() {
+        return updateSuccess;
     }
 
     private CategoryRepository categoryRepository;
@@ -43,22 +53,39 @@ public class CategoryViewModel extends ViewModel implements IFirebaseCallbackLis
             }
 
             @Override
-            public void onFirebaseLoadFailed(String errorMessage) {
-                CategoryViewModel.this.errorMessage.postValue(errorMessage);
+            public void onFirebaseLoadFailed(String message) {
+                errorMessage.postValue(message);
             }
         });
     }
+
 
     public void deleteCategory(String categoryId) {
         categoryRepository.deleteCategory(categoryId, new IFirebaseCallbackListener<Void>() {
             @Override
             public void onFirebaseLoadSuccess(Void unused) {
+                deleteSuccess.postValue(true);
                 loadData();
             }
 
             @Override
             public void onFirebaseLoadFailed(String message) {
                 errorMessage.setValue(message);
+            }
+        });
+    }
+
+    public void updateCategory(Category category) {
+        categoryRepository.updateCategory(category, new IFirebaseCallbackListener<Void>() {
+            @Override
+            public void onFirebaseLoadSuccess(Void items) {
+                loadData();
+                updateSuccess.postValue(true);
+            }
+
+            @Override
+            public void onFirebaseLoadFailed(String message) {
+                errorMessage.postValue(message);
             }
         });
     }

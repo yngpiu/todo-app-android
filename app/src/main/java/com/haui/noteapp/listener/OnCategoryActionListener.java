@@ -4,4 +4,5 @@ import com.haui.noteapp.model.Category;
 
 public interface OnCategoryActionListener {
     void onDelete(Category category);
+    void onUpdate(Category category);
 }

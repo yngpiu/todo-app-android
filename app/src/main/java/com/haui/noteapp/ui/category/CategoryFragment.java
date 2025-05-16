@@ -16,6 +16,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.haui.noteapp.R;
 import com.haui.noteapp.databinding.FragmentCategoryBinding;
+import com.haui.noteapp.listener.OnCategoryActionListener;
 import com.haui.noteapp.model.Category;
 import com.haui.noteapp.util.ColorUtil;
 
@@ -75,15 +76,45 @@ public class CategoryFragment extends Fragment {
         categoryViewModel.getCategoryList().observe(getViewLifecycleOwner(), categories -> {
             binding.recyclerCategory.setVisibility(View.GONE);
             binding.progressBar.setVisibility(View.VISIBLE);
-            CategoryAdapter adapter = new CategoryAdapter(categories, category -> {
-                new AlertDialog.Builder(requireContext())
-                        .setTitle("Xoá danh mục")
-                        .setMessage("Bạn có chắc muốn xoá danh mục [" + category.getName() + "] không?")
-                        .setPositiveButton("Xoá", ((dialog, which) ->
-                        {
-                            categoryViewModel.deleteCategory(category.getId());
-                        })).setNegativeButton("Huỷ", null)
-                        .show();
+            CategoryAdapter adapter = new CategoryAdapter(categories, new OnCategoryActionListener() {
+                @Override
+                public void onUpdate(Category category) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                    builder.setTitle("Chỉnh sửa danh mục");
+
+                    View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_add_category, null);
+                    TextInputEditText input = view.findViewById(R.id.input_category_name);
+                    input.setText(category.getName());
+
+                    builder.setView(view);
+                    builder.setPositiveButton("Lưu", (dialog, which) -> {
+                        String newName = input.getText().toString().trim();
+                        if (newName.isEmpty()) {
+                            Toast.makeText(getContext(), "Tên danh mục không được để trống", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (!newName.equals(category.getName())) {
+                            category.setName(newName);
+                            categoryViewModel.updateCategory(category);
+                        }
+                    });
+
+                    builder.setNegativeButton("Huỷ", (dialog, which) -> dialog.dismiss());
+                    builder.show();
+                }
+
+                @Override
+                public void onDelete(Category category) {
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle("Xoá danh mục")
+                            .setMessage("Bạn có chắc muốn xoá danh mục [" + category.getName() + "] không?")
+                            .setPositiveButton("Xoá", ((dialog, which) ->
+                            {
+                                categoryViewModel.deleteCategory(category.getId());
+                            })).setNegativeButton("Huỷ", null)
+                            .show();
+                }
             });
             binding.recyclerCategory.setLayoutManager(new LinearLayoutManager(getContext()));
             binding.recyclerCategory.setAdapter(adapter);
@@ -93,6 +124,16 @@ public class CategoryFragment extends Fragment {
         categoryViewModel.getAddSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success) {
                 Toast.makeText(getContext(), "Đã thêm danh mục", Toast.LENGTH_SHORT).show();
+            }
+        });
+        categoryViewModel.getUpdateSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (success) {
+                Toast.makeText(getContext(), "Đã sửa danh mục", Toast.LENGTH_SHORT).show();
+            }
+        });
+        categoryViewModel.getDeleteSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (success) {
+                Toast.makeText(getContext(), "Đã xoá danh mục", Toast.LENGTH_SHORT).show();
             }
         });
     }
