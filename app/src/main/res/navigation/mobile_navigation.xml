@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_task" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.haui.noteapp.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_category"
+        android:name="com.haui.noteapp.ui.category.CategoryFragment"
+        android:label="@string/title_category"
+        tools:layout="@layout/fragment_category" />
 
     <fragment
         android:id="@+id/navigation_notifications"
