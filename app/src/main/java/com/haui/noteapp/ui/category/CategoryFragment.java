@@ -24,8 +24,6 @@ public class CategoryFragment extends Fragment {
         binding = FragmentCategoryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textCategory;
-        categoryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
