@@ -50,6 +50,10 @@ public class AuthRepository {
 
     }
 
+    public Boolean isLogged() {
+        return mAuth.getCurrentUser() != null;
+    }
+
     public void signup(String email, String password, String displayName) {
         loadingLiveData.postValue(true);
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
