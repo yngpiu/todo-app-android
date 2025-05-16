@@ -4,18 +4,15 @@ public class User {
     private String id;
     private String email;
     private String displayName;
-    private String photoUrl;
 
     public User() {
     }
 
-    public User(String id, String email, String displayName, String photoUrl) {
+    public User(String id, String email, String displayName) {
         this.id = id;
         this.email = email;
         this.displayName = displayName;
-        this.photoUrl = photoUrl;
     }
-
     public String getId() {
         return id;
     }
@@ -38,14 +35,6 @@ public class User {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
-    }
-
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
     }
 
 }
