@@ -9,17 +9,19 @@ public class Task {
     private String categoryId;
     private Date createdAt;
     private Date updatedAt;
+    private String priority;
 
     public Task() {
     }
 
-    public Task(String id, String name, Date douDate, String categoryId, Date createdAt, Date updatedAt) {
+    public Task(String id, String name, Date douDate, String categoryId, Date createdAt, Date updatedAt, String priority) {
         this.id = id;
         this.name = name;
         this.douDate = douDate;
         this.categoryId = categoryId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.priority = priority;
     }
 
     public String getId() {
@@ -68,5 +70,13 @@ public class Task {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
     }
 }
