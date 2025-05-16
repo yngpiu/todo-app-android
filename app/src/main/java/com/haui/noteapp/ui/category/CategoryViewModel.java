@@ -18,6 +18,12 @@ import java.util.List;
 public class CategoryViewModel extends ViewModel implements IFirebaseCallbackListener<List<Category>> {
     private final MutableLiveData<List<Category>> mutableCategoryList = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> addSuccess = new MutableLiveData<>();
+
+    public LiveData<Boolean> getAddSuccess() {
+        return addSuccess;
+    }
+
     private CategoryRepository categoryRepository;
 
     public CategoryViewModel() {
@@ -28,9 +34,25 @@ public class CategoryViewModel extends ViewModel implements IFirebaseCallbackLis
         categoryRepository.loadData();
     }
 
+    public void addCategory(Category category) {
+        categoryRepository.addCategory(category, new IFirebaseCallbackListener<Void>() {
+            @Override
+            public void onFirebaseLoadSuccess(Void items) {
+                addSuccess.postValue(true);
+                loadData();
+            }
+
+            @Override
+            public void onFirebaseLoadFailed(String errorMessage) {
+                CategoryViewModel.this.errorMessage.postValue(errorMessage);
+            }
+        });
+    }
+
     public LiveData<List<Category>> getCategoryList() {
         return mutableCategoryList;
     }
+
     public LiveData<String> getErrorMessage() {
         return errorMessage;
     }

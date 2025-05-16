@@ -7,16 +7,23 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.haui.noteapp.R;
 import com.haui.noteapp.databinding.FragmentCategoryBinding;
+import com.haui.noteapp.model.Category;
+import com.haui.noteapp.util.ColorUtil;
 
 public class CategoryFragment extends Fragment {
 
     private FragmentCategoryBinding binding;
     private CategoryViewModel categoryViewModel;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -27,8 +34,34 @@ public class CategoryFragment extends Fragment {
         initObserve();
 
         categoryViewModel.loadData();
+        binding.fabAddTask.setOnClickListener(v -> showAddCategoryDialog());
 
         return binding.getRoot();
+    }
+
+    private void showAddCategoryDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Thêm danh mục");
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_add_category, null);
+        TextInputEditText input = view.findViewById(R.id.input_category_name);
+        builder.setView(view);
+
+        builder.setPositiveButton("Thêm", ((dialog, which) ->
+        {
+            String name = input.getText().toString().trim();
+            if (name.isEmpty()) {
+                Toast.makeText(getContext(), "Vui lòng nhập tên danh mục", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Category category = new Category();
+            category.setName(name);
+            category.setColorHex(ColorUtil.getRandomColor());
+            categoryViewModel.addCategory(category);
+
+        }));
+        builder.setNegativeButton("Hủy", ((dialog, which) -> dialog.dismiss()));
+        builder.show();
     }
 
     private void initBinding() {
@@ -47,6 +80,11 @@ public class CategoryFragment extends Fragment {
             binding.recyclerCategory.setAdapter(adapter);
             binding.recyclerCategory.setVisibility(View.VISIBLE);
             binding.progressBar.setVisibility(View.GONE);
+        });
+        categoryViewModel.getAddSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (success) {
+                Toast.makeText(getContext(), "Đã thêm danh mục", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
