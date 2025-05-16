@@ -71,4 +71,9 @@ public class AuthRepository {
             }
         });
     }
+
+    public void signOut() {
+        mAuth.signOut();
+        userLiveData.postValue(null);
+    }
 }

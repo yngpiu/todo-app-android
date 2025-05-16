@@ -17,7 +17,6 @@ public class SettingActivity extends AppCompatActivity {
         binding = ActivitySettingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Set up Toolbar
         MaterialToolbar toolbar = binding.toolbar;
         toolbar.setTitle("Cài đặt");
         setSupportActionBar(toolbar);
