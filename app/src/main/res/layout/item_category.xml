@@ -1,61 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp">
+    android:layout_marginVertical="6dp"
+    android:layout_marginHorizontal="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#DDD"
+    app:cardBackgroundColor="@android:color/white">
 
-    <!-- Color dot -->
-    <ImageView
-        android:id="@+id/colorDot"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginEnd="12dp"
-        android:src="@drawable/ic_circle_solid"
-        android:tint="#FF9800"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Category name -->
-    <TextView
-        android:id="@+id/categoryName"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:text="Tên danh mục"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        android:layout_marginStart="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/editButton"
-        app:layout_constraintStart_toEndOf="@id/colorDot"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:padding="12dp">
 
-    <!-- Edit button -->
-    <ImageButton
-        android:id="@+id/editButton"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Sửa"
-        android:src="@drawable/ic_edit"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/deleteButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#fcb503" />
+        <!-- Color dot -->
+        <ImageView
+            android:id="@+id/colorDot"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_circle_solid"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- Delete button -->
-    <ImageButton
-        android:id="@+id/deleteButton"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Xoá"
-        android:src="@drawable/ic_trash"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#fc3903" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Category name -->
+        <TextView
+            android:id="@+id/categoryName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Tên danh mục"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:layout_marginStart="10dp"
+            app:layout_constraintStart_toEndOf="@id/colorDot"
+            app:layout_constraintEnd_toStartOf="@id/editButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Edit button -->
+        <ImageButton
+            android:id="@+id/editButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Sửa"
+            android:src="@drawable/ic_edit"
+            app:tint="#fcb503"
+            app:layout_constraintEnd_toStartOf="@id/deleteButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Delete button -->
+        <ImageButton
+            android:id="@+id/deleteButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Xoá"
+            android:src="@drawable/ic_trash"
+            app:tint="#fc3903"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

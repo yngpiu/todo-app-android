@@ -4,14 +4,17 @@ public class Category {
     private String id;
     private String name;
     private String colorHex;
+    private String userId;
 
     public Category() {
 
     }
-    public Category(String id, String name, String colorHex) {
+
+    public Category(String id, String name, String colorHex, String userId) {
         this.id = id;
         this.name = name;
         this.colorHex = colorHex;
+        this.userId = userId;
     }
 
     public String getId() {
@@ -33,7 +36,16 @@ public class Category {
     public String getColorHex() {
         return colorHex;
     }
+
     public void setColorHex(String colorHex) {
         this.colorHex = colorHex;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
