@@ -55,4 +55,12 @@ public class CategoryRepository {
             listener.onFirebaseLoadSuccess(null);
         }).addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
     }
+
+    public void deleteCategory(String categoryId, IFirebaseCallbackListener<Void> listener) {
+        categoryRef.child(categoryId)
+                .removeValue()
+                .addOnSuccessListener(unused -> listener.onFirebaseLoadSuccess(null))
+                .addOnFailureListener(e -> listener.onFirebaseLoadFailed(e.getMessage()));
+    }
+
 }

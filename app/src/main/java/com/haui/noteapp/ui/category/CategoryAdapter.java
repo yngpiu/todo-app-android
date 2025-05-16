@@ -13,15 +13,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.haui.noteapp.R;
 import com.haui.noteapp.databinding.ItemCategoryBinding;
+import com.haui.noteapp.listener.OnCategoryActionListener;
 import com.haui.noteapp.model.Category;
 
 import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
     private List<Category> categories;
+    private final OnCategoryActionListener listener;
 
-    public CategoryAdapter(List<Category> categories) {
+    public CategoryAdapter(List<Category> categories, OnCategoryActionListener listener) {
         this.categories = categories;
+        this.listener = listener;
     }
 
     @NonNull
@@ -37,6 +40,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         Category category = categories.get(position);
         holder.binding.categoryName.setText(category.getName());
         holder.binding.colorDot.setColorFilter(android.graphics.Color.parseColor(category.getColorHex()));
+        holder.binding.deleteButton.setOnClickListener(v -> {
+            listener.onDelete(category);
+        });
     }
 
     @Override
@@ -52,4 +58,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             this.binding = binding;
         }
     }
+
+
 }

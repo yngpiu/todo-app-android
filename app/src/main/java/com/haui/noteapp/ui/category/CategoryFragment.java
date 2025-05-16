@@ -75,7 +75,16 @@ public class CategoryFragment extends Fragment {
         categoryViewModel.getCategoryList().observe(getViewLifecycleOwner(), categories -> {
             binding.recyclerCategory.setVisibility(View.GONE);
             binding.progressBar.setVisibility(View.VISIBLE);
-            CategoryAdapter adapter = new CategoryAdapter(categories);
+            CategoryAdapter adapter = new CategoryAdapter(categories, category -> {
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Xoá danh mục")
+                        .setMessage("Bạn có chắc muốn xoá danh mục [" + category.getName() + "] không?")
+                        .setPositiveButton("Xoá", ((dialog, which) ->
+                        {
+                            categoryViewModel.deleteCategory(category.getId());
+                        })).setNegativeButton("Huỷ", null)
+                        .show();
+            });
             binding.recyclerCategory.setLayoutManager(new LinearLayoutManager(getContext()));
             binding.recyclerCategory.setAdapter(adapter);
             binding.recyclerCategory.setVisibility(View.VISIBLE);

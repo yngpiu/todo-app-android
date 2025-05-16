@@ -49,6 +49,21 @@ public class CategoryViewModel extends ViewModel implements IFirebaseCallbackLis
         });
     }
 
+    public void deleteCategory(String categoryId) {
+        categoryRepository.deleteCategory(categoryId, new IFirebaseCallbackListener<Void>() {
+            @Override
+            public void onFirebaseLoadSuccess(Void unused) {
+                loadData();
+            }
+
+            @Override
+            public void onFirebaseLoadFailed(String message) {
+                errorMessage.setValue(message);
+            }
+        });
+    }
+
+
     public LiveData<List<Category>> getCategoryList() {
         return mutableCategoryList;
     }
