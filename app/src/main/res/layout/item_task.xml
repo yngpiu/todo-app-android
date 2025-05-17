@@ -1,23 +1,17 @@
 <!-- res/layout/item_task.xml -->
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:clickable="true"
-    android:focusable="true"
-    app:cardElevation="2dp"
-    app:cardCornerRadius="12dp"
-    app:strokeWidth="1dp">
+    android:layout_margin="8dp">
 
     <LinearLayout
         android:id="@+id/container_task_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:padding="16dp">
 
         <!-- Checkbox -->
         <com.google.android.material.checkbox.MaterialCheckBox
@@ -30,9 +24,9 @@
             android:id="@+id/container_task_content"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="12dp">
+            android:orientation="vertical">
 
             <!-- Title -->
             <com.google.android.material.textview.MaterialTextView
@@ -49,9 +43,9 @@
                 android:id="@+id/container_meta_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="4dp"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <!-- Category -->
                 <com.google.android.material.textview.MaterialTextView
@@ -66,22 +60,22 @@
                     android:id="@+id/tv_task_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
                     android:text="23/06/2005"
-                    android:textSize="13sp"
                     android:textColor="?attr/colorOnSurfaceVariant"
-                    android:layout_marginStart="12dp" />
+                    android:textSize="13sp" />
 
                 <!-- Priority Badge -->
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_task_priority"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="High"
-                    android:textSize="13sp"
+                    android:layout_marginStart="12dp"
+                    android:gravity="center_vertical"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="2dp"
-                    android:layout_marginStart="12dp"
-                    android:gravity="center_vertical" />
+                    android:text="High"
+                    android:textSize="13sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -89,7 +83,9 @@
             android:id="@+id/iv_more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_more"
-            android:contentDescription="@string/more_options"/>
+            android:layout_marginEnd="0dp"
+            android:padding="10dp"
+            android:contentDescription="@string/more_options"
+            android:src="@drawable/ic_more" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

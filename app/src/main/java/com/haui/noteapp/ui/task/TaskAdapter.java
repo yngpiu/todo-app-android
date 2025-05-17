@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.haui.noteapp.R;
 import com.haui.noteapp.databinding.ItemTaskBinding;
 import com.haui.noteapp.listener.OnTaskActionListener;
 import com.haui.noteapp.model.Category;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
     private final List<Task> tasks;
-//    private final OnTaskActionListener listener;
+    //    private final OnTaskActionListener listener;
     private Map<String, Category> categoryMap;
 
     public TaskAdapter(List<Task> tasks, Map<String, Category> categoryMap) {
@@ -45,7 +46,24 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 ? categoryMap.get(task.getCategoryId()).getName()
                 : "Không rõ";
         holder.binding.tvTaskCategory.setText(categoryName);
+        holder.binding.ivMore.setOnClickListener(v -> {
+            android.widget.PopupMenu popupMenu = new android.widget.PopupMenu(v.getContext(), v);
+            popupMenu.getMenuInflater().inflate(R.menu.task_menu, popupMenu.getMenu());
 
+            popupMenu.setOnMenuItemClickListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.action_edit) {
+                    // listener.onEditClicked(task);
+                    return true;
+                } else if (itemId == R.id.action_delete) {
+                    // listener.onDeleteClicked(task);
+                    return true;
+                }
+                return false;
+            });
+
+            popupMenu.show();
+        });
 
     }
 
