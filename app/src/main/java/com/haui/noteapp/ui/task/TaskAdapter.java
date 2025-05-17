@@ -10,6 +10,7 @@ import com.haui.noteapp.R;
 import com.haui.noteapp.databinding.ItemTaskBinding;
 import com.haui.noteapp.listener.OnTaskActionListener;
 import com.haui.noteapp.model.Category;
+import com.haui.noteapp.model.Priority;
 import com.haui.noteapp.model.Task;
 
 import java.text.SimpleDateFormat;
@@ -45,8 +46,11 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         String categoryName = categoryMap.containsKey(task.getCategoryId())
                 ? categoryMap.get(task.getCategoryId()).getName()
                 : "Không rõ";
-        holder.binding.tvTaskCategory.setText(categoryName);
-        holder.binding.tvTaskPriority.setText(task.getPriority());
+
+
+        String priorityKey = task.getPriority();
+        String priorityLabel = Priority.fromKey(priorityKey).getLabel();
+        holder.binding.tvTaskPriority.setText(priorityLabel);
 
 
         holder.binding.ivMore.setOnClickListener(v -> {

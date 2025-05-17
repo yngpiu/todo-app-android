@@ -22,6 +22,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.haui.noteapp.R;
 import com.haui.noteapp.databinding.FragmentTaskBinding;
 import com.haui.noteapp.model.Category;
+import com.haui.noteapp.model.Priority;
 import com.haui.noteapp.model.Task;
 import com.haui.noteapp.util.DateUtil;
 
@@ -157,8 +158,10 @@ public class TaskFragment extends Fragment {
                     newTask.setName(title);
                     newTask.setCategoryId(nameToId.get(categoryName));
                     newTask.setDouDate(dueDate);
-                    newTask.setPriority(selectedPriority[0]);
+                    Priority priorityEnum = Priority.fromLabel(selectedPriority[0]);
+                    newTask.setPriority(priorityEnum.name());
                     newTask.setUpdatedAt(new Date());
+                    newTask.setCreatedAt(new Date());
 
                     taskViewModel.addTask(newTask);
                     dialog.dismiss();
