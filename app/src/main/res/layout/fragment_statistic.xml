@@ -3,35 +3,38 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="wrap_content"
+    android:paddingTop="65dp"
+    android:paddingBottom="85dp">
 
-    <!-- Total Tasks Card -->
+    <!-- Tổng số công việc -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_total_tasks"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="3dp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/card_completed"
         app:layout_constraintEnd_toStartOf="@id/card_completion_rate"
-        app:layout_constraintDimensionRatio="1:1">
+        app:layout_constraintDimensionRatio="3:1.5"
+        app:layout_constraintWidth_percent="0.45">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="16dp">
+            android:padding="12dp">
 
             <TextView
                 android:id="@+id/tv_total_tasks_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Total Tasks"
-                android:textSize="16sp"
+                android:text="Tổng nhiệm vụ"
+                android:textSize="14sp"
                 android:textColor="@android:color/darker_gray" />
 
             <TextView
@@ -39,37 +42,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="24sp"
+                android:textSize="26sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Completion Rate Card -->
+    <!-- Tỷ lệ hoàn thành -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_completion_rate"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="3dp"
+        app:layout_constraintTop_toTopOf="@id/card_total_tasks"
         app:layout_constraintStart_toEndOf="@id/card_total_tasks"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintDimensionRatio="1:1">
+        app:layout_constraintBottom_toBottomOf="@id/card_total_tasks"
+        app:layout_constraintWidth_percent="0.45"
+        app:layout_constraintDimensionRatio="3:1.5">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="16dp">
+            android:padding="12dp">
 
             <TextView
                 android:id="@+id/tv_completion_rate_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Completion Rate"
-                android:textSize="16sp"
+                android:text="Tỷ lệ hoàn thành"
+                android:textSize="14sp"
                 android:textColor="@android:color/darker_gray" />
 
             <TextView
@@ -77,38 +82,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0%"
-                android:textSize="24sp"
+                android:textSize="26sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Completed Card -->
+    <!-- Đã hoàn thành -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_completed"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="3dp"
         app:layout_constraintTop_toBottomOf="@id/card_total_tasks"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/card_pending"
-        app:layout_constraintDimensionRatio="1:1">
+        app:layout_constraintWidth_percent="0.45"
+        app:layout_constraintDimensionRatio="3:1.5">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="16dp"
+            android:padding="12dp"
             android:background="@android:color/holo_green_light">
 
             <TextView
                 android:id="@+id/tv_completed_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Completed"
-                android:textSize="16sp"
+                android:text="Đã hoàn thành"
+                android:textSize="14sp"
                 android:textColor="@android:color/black" />
 
             <TextView
@@ -116,39 +122,41 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="24sp"
+                android:textSize="26sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Pending Card -->
+    <!-- Đang chờ -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_pending"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/card_completion_rate"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="3dp"
+        app:layout_constraintTop_toTopOf="@id/card_completed"
         app:layout_constraintStart_toEndOf="@id/card_completed"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintDimensionRatio="1:1">
+        app:layout_constraintBottom_toBottomOf="@id/card_completed"
+        app:layout_constraintWidth_percent="0.45"
+        app:layout_constraintDimensionRatio="3:1.5">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="16dp"
+            android:padding="12dp"
             android:background="@android:color/holo_orange_light">
 
             <TextView
                 android:id="@+id/tv_pending_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pending"
-                android:textSize="16sp"
+                android:text="Chưa hoàn thành"
+                android:textSize="14sp"
                 android:textColor="@android:color/black" />
 
             <TextView
@@ -156,7 +164,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="24sp"
+                android:textSize="26sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black" />
         </LinearLayout>
