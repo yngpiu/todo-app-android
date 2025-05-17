@@ -16,20 +16,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.haui.noteapp.R;
 import com.haui.noteapp.databinding.FragmentTaskBinding;
 import com.haui.noteapp.model.Category;
 import com.haui.noteapp.model.Task;
-import com.google.android.material.datepicker.MaterialDatePicker;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class TaskFragment extends Fragment {
 
@@ -39,13 +34,11 @@ public class TaskFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
-        initBinding();
-        initViewModel();
+        binding = FragmentTaskBinding.inflate(inflater, container, false);
+        taskViewModel = new ViewModelProvider(this).get(TaskViewModel.class);
         initObserve();
-        binding.fabAddTask.setOnClickListener(v -> {
-            showAddTaskDialog();
-        });
+
+        binding.fabAddTask.setOnClickListener(v -> showAddTaskDialog());
 
         return binding.getRoot();
     }
@@ -56,157 +49,153 @@ public class TaskFragment extends Fragment {
         AutoCompleteTextView inputCategory = dialogView.findViewById(R.id.input_task_category);
         TextInputEditText inputTitle = dialogView.findViewById(R.id.input_task_title);
         TextInputEditText inputDueDate = dialogView.findViewById(R.id.input_task_due_date);
-        MaterialCardView cardPriorityHigh = dialogView.findViewById(R.id.card_priority_high);
-        MaterialCardView cardPriorityMedium = dialogView.findViewById(R.id.card_priority_medium);
-        MaterialCardView cardPriorityLow = dialogView.findViewById(R.id.card_priority_low);
 
-        final TextView textHigh = (TextView) cardPriorityHigh.getChildAt(0);
-        final TextView textMedium = (TextView) cardPriorityMedium.getChildAt(0);
-        final TextView textLow = (TextView) cardPriorityLow.getChildAt(0);
+        MaterialCardView cardHigh = dialogView.findViewById(R.id.card_priority_high);
+        MaterialCardView cardMedium = dialogView.findViewById(R.id.card_priority_medium);
+        MaterialCardView cardLow = dialogView.findViewById(R.id.card_priority_low);
 
-        final String[] priority = {"Thấp"};
-        cardPriorityLow.setChecked(true);
-        cardPriorityLow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.low_priority));
-        textLow.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white));
+        TextView textHigh = (TextView) cardHigh.getChildAt(0);
+        TextView textMedium = (TextView) cardMedium.getChildAt(0);
+        TextView textLow = (TextView) cardLow.getChildAt(0);
 
-        cardPriorityHigh.setOnClickListener(v -> {
-            priority[0] = "Cao";
-            cardPriorityHigh.setChecked(true);
-            cardPriorityMedium.setChecked(false);
-            cardPriorityLow.setChecked(false);
+        final String[] selectedPriority = {null};
+        View.OnClickListener priorityClickListener = v -> {
+            if (v == cardHigh) selectedPriority[0] = "Cao";
+            else if (v == cardMedium) selectedPriority[0] = "Trung bình";
+            else selectedPriority[0] = "Thấp";
 
-            // Set background to stroke color for selected card
-            cardPriorityHigh.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.high_priority));
-            cardPriorityMedium.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
-            cardPriorityLow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
+            setPriorityUI(
+                    cardHigh, textHigh,
+                    cardMedium, textMedium,
+                    cardLow, textLow,
+                    selectedPriority[0]
+            );
+        };
 
-            // Adjust text colors for contrast
-            textHigh.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white));
-            textMedium.setTextColor(ContextCompat.getColor(requireContext(), R.color.medium_priority));
-            textLow.setTextColor(ContextCompat.getColor(requireContext(), R.color.low_priority));
-        });
-
-        cardPriorityMedium.setOnClickListener(v -> {
-            priority[0] = "Trung bình";
-            cardPriorityHigh.setChecked(false);
-            cardPriorityMedium.setChecked(true);
-            cardPriorityLow.setChecked(false);
-
-            // Set background to stroke color for selected card
-            cardPriorityHigh.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
-            cardPriorityMedium.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.medium_priority));
-            cardPriorityLow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
-
-            // Adjust text colors for contrast
-            textHigh.setTextColor(ContextCompat.getColor(requireContext(), R.color.high_priority));
-            textMedium.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white));
-            textLow.setTextColor(ContextCompat.getColor(requireContext(), R.color.low_priority));
-        });
-
-        cardPriorityLow.setOnClickListener(v -> {
-            priority[0] = "Thấp";
-            cardPriorityHigh.setChecked(false);
-            cardPriorityMedium.setChecked(false);
-            cardPriorityLow.setChecked(true);
-
-            // Set background to stroke color for selected card
-            cardPriorityHigh.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
-            cardPriorityMedium.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
-            cardPriorityLow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.low_priority));
-
-            // Adjust text colors for contrast
-            textHigh.setTextColor(ContextCompat.getColor(requireContext(), R.color.high_priority));
-            textMedium.setTextColor(ContextCompat.getColor(requireContext(), R.color.medium_priority));
-            textLow.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white));
-        });
+        cardHigh.setOnClickListener(priorityClickListener);
+        cardMedium.setOnClickListener(priorityClickListener);
+        cardLow.setOnClickListener(priorityClickListener);
 
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Chọn ngày đến hạn")
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                 .build();
+
         inputDueDate.setOnClickListener(v -> datePicker.show(getParentFragmentManager(), "DATE_PICKER"));
         datePicker.addOnPositiveButtonClickListener(selection -> {
-            inputDueDate.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date(selection)));
+            String formattedDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date(selection));
+            inputDueDate.setText(formattedDate);
         });
 
         List<Category> categories = taskViewModel.getCategoryList().getValue();
-        List<String> categoryNames = new ArrayList<>();
-        Map<String, String> categoryNameToIdMap = new HashMap<>();
-
         if (categories != null && !categories.isEmpty()) {
+            List<String> categoryNames = new ArrayList<>();
+            Map<String, String> nameToId = new HashMap<>();
+
             for (Category c : categories) {
                 categoryNames.add(c.getName());
-                categoryNameToIdMap.put(c.getName(), c.getId());
+                nameToId.put(c.getName(), c.getId());
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                    requireContext(),
-                    android.R.layout.simple_dropdown_item_1line,
-                    categoryNames
-            );
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                    android.R.layout.simple_dropdown_item_1line, categoryNames);
             inputCategory.setAdapter(adapter);
             inputCategory.setThreshold(0);
 
-            inputCategory.setOnClickListener(v -> {
-                inputCategory.showDropDown();
-            });
+            inputCategory.setOnClickListener(v -> inputCategory.showDropDown());
+            inputCategory.setOnFocusChangeListener((v, hasFocus) -> { if (hasFocus) inputCategory.showDropDown(); });
 
-            inputCategory.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    inputCategory.showDropDown();
-                }
-            });
+            new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Thêm công việc mới")
+                    .setView(dialogView)
+                    .setPositiveButton("Lưu", (dialog, which) -> {
+                        String title = inputTitle.getText() != null ? inputTitle.getText().toString().trim() : "";
+                        String categoryName = inputCategory.getText() != null ? inputCategory.getText().toString().trim() : "";
+                        String dueDateStr = inputDueDate.getText() != null ? inputDueDate.getText().toString().trim() : "";
+
+                        if (title.isEmpty()) {
+                            inputTitle.setError("Tiêu đề không được để trống");
+                            return;
+                        }
+                        if (categoryName.isEmpty()) {
+                            inputCategory.setError("Vui lòng chọn danh mục");
+                            return;
+                        }
+                        if (dueDateStr.isEmpty()) {
+                            inputDueDate.setError("Vui lòng chọn ngày đến hạn");
+                            return;
+                        }
+
+                        Date dueDate;
+                        try {
+                            dueDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(dueDateStr);
+                        } catch (Exception e) {
+                            inputDueDate.setError("Ngày không hợp lệ");
+                            return;
+                        }
+
+                        Task newTask = new Task();
+                        newTask.setName(title);
+                        newTask.setCategoryId(nameToId.get(categoryName));
+                        newTask.setDouDate(dueDate);
+                        newTask.setPriority(selectedPriority[0]);
+                        newTask.setUpdatedAt(new Date());
+
+                        taskViewModel.addTask(newTask);
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
+                    .show();
+
         } else {
             inputCategory.setEnabled(false);
             inputCategory.setHint("Chưa có danh mục");
+            new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Thêm công việc mới")
+                    .setView(dialogView)
+                    .setPositiveButton("Hủy", (dialog, which) -> dialog.dismiss())
+                    .show();
         }
-
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Thêm công việc mới")
-                .setView(dialogView)
-                .setPositiveButton("Lưu", (dialog, which) -> {
-                    String title = inputTitle.getText().toString().trim();
-                    String selectedCategoryName = inputCategory.getText().toString().trim();
-                    String dueDateStr = inputDueDate.getText().toString().trim();
-
-                    if (title.isEmpty()) {
-                        inputTitle.setError("Tiêu đề không được để trống");
-                        return;
-                    }
-                    if (selectedCategoryName.isEmpty()) {
-                        inputCategory.setError("Vui lòng chọn danh mục");
-                        return;
-                    }
-                    if (dueDateStr.isEmpty()) {
-                        inputDueDate.setError("Vui lòng chọn ngày đến hạn");
-                        return;
-                    }
-
-                    Date dueDate;
-                    try {
-                        dueDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(dueDateStr);
-                    } catch (Exception e) {
-                        inputDueDate.setError("Ngày không hợp lệ");
-                        return;
-                    }
-
-                    Task newTask = new Task();
-                    newTask.setName(title);
-                    newTask.setCategoryId(categoryNameToIdMap.get(selectedCategoryName));
-                    newTask.setDouDate(dueDate);
-                    newTask.setPriority(priority[0]);
-                    newTask.setUpdatedAt(new Date());
-
-                    taskViewModel.addTask(newTask);
-
-                    dialog.dismiss();
-                })
-                .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
-                .show();
     }
 
-    private void initBinding() {
-        binding = FragmentTaskBinding.inflate(getLayoutInflater());
+    private void setPriorityUI(
+            MaterialCardView cardHigh, TextView textHigh,
+            MaterialCardView cardMedium, TextView textMedium,
+            MaterialCardView cardLow, TextView textLow,
+            String selectedPriority
+    ) {
+        // Reset all
+        cardHigh.setChecked(false);
+        cardMedium.setChecked(false);
+        cardLow.setChecked(false);
+
+        cardHigh.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
+        cardMedium.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
+        cardLow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
+
+        textHigh.setTextColor(ContextCompat.getColor(requireContext(), R.color.high_priority));
+        textMedium.setTextColor(ContextCompat.getColor(requireContext(), R.color.medium_priority));
+        textLow.setTextColor(ContextCompat.getColor(requireContext(), R.color.low_priority));
+
+        // Set selected
+        switch (selectedPriority) {
+            case "Cao":
+                cardHigh.setChecked(true);
+                cardHigh.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.high_priority));
+                textHigh.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white));
+                break;
+            case "Trung bình":
+                cardMedium.setChecked(true);
+                cardMedium.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.medium_priority));
+                textMedium.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white));
+                break;
+            case "Thấp":
+            default:
+                cardLow.setChecked(true);
+                cardLow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.low_priority));
+                textLow.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white));
+                break;
+        }
     }
 
     private void initObserve() {
@@ -218,9 +207,7 @@ public class TaskFragment extends Fragment {
             binding.progressBar.setVisibility(View.VISIBLE);
 
             Map<String, Category> categoryMap = new HashMap<>();
-            for (Category c : categories) {
-                categoryMap.put(c.getId(), c);
-            }
+            for (Category c : categories) categoryMap.put(c.getId(), c);
 
             TaskAdapter adapter = new TaskAdapter(tasks, categoryMap);
 
@@ -232,22 +219,14 @@ public class TaskFragment extends Fragment {
         });
 
         taskViewModel.getErrorMessage().observe(getViewLifecycleOwner(), event -> {
-            String message = event.getContentIfNotHandled();
-            if (message != null) {
-                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-            }
+            String msg = event.getContentIfNotHandled();
+            if (msg != null) Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
         });
 
         taskViewModel.getActionMessage().observe(getViewLifecycleOwner(), event -> {
-            String message = event.getContentIfNotHandled();
-            if (message != null) {
-                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-            }
+            String msg = event.getContentIfNotHandled();
+            if (msg != null) Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
         });
-    }
-
-    private void initViewModel() {
-        taskViewModel = new ViewModelProvider(this).get(TaskViewModel.class);
     }
 
     @Override
