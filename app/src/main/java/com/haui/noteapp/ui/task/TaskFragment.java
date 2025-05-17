@@ -187,6 +187,11 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
                 .show();
     }
 
+    @Override
+    public void onCompleteTask(Task task) {
+        taskViewModel.updateTask(task); // Update only the isCompleted status
+    }
+
     private boolean handleSaveTask(Task task, TextInputEditText inputTitle, AutoCompleteTextView inputCategory,
                                    TextInputEditText inputDueDate, PrioritySelector prioritySelector, boolean isEdit) {
         String title = Optional.ofNullable(inputTitle.getText()).map(CharSequence::toString).orElse("").trim();
@@ -239,7 +244,7 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
 
     @Override
     public void onUpdate(Task task) {
-        taskViewModel.updateTask(task); // Update the task in Firestore
+        showTaskDialog(task, true); // Open edit dialog
     }
 
     @Override

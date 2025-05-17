@@ -66,7 +66,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         holder.binding.cbComplete.setOnCheckedChangeListener((buttonView, isChecked) -> {
             task.setCompleted(isChecked); // Update the task's isCompleted field
             if (listener != null) {
-                listener.onUpdate(task); // Trigger update via listener
+                listener.onCompleteTask(task); // Trigger completion update
             }
             // Update strikethrough based on new isCompleted state
             if (isChecked) {
@@ -83,10 +83,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             popupMenu.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
                 if (itemId == R.id.action_edit) {
-                    listener.onUpdate(task);
+                    listener.onUpdate(task); // Open edit dialog
                     return true;
                 } else if (itemId == R.id.action_delete) {
-                    listener.onDelete(task); // Trigger delete via listener
+                    listener.onDelete(task); // Trigger delete
                     return true;
                 }
                 return false;
