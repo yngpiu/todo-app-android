@@ -1,5 +1,6 @@
 package com.haui.noteapp.ui.task;
 
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -47,11 +48,26 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 ? categoryMap.get(task.getCategoryId()).getName()
                 : "Không rõ";
 
-
         String priorityKey = task.getPriority();
         String priorityLabel = Priority.fromKey(priorityKey).getLabel();
         holder.binding.tvTaskPriority.setText(priorityLabel);
 
+        if (task.isCompleted()) {
+            holder.binding.tvTaskTitle.setPaintFlags(holder.binding.tvTaskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            holder.binding.tvTaskTitle.setPaintFlags(holder.binding.tvTaskTitle.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        }
+
+        // Set checkbox state
+        holder.binding.cbComplete.setChecked(task.isCompleted());
+
+        // Add checkbox change listener
+        holder.binding.cbComplete.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            task.setCompleted(isChecked);
+            if (listener != null) {
+                listener.onUpdate(task);
+            }
+        });
 
         holder.binding.ivMore.setOnClickListener(v -> {
             android.widget.PopupMenu popupMenu = new android.widget.PopupMenu(v.getContext(), v);
@@ -71,7 +87,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
             popupMenu.show();
         });
-
     }
 
     @Override
@@ -87,6 +102,4 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             this.binding = binding;
         }
     }
-
-
 }

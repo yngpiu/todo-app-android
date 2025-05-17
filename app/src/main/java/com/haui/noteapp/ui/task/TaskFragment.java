@@ -18,6 +18,7 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.haui.noteapp.R;
 import com.haui.noteapp.databinding.FragmentTaskBinding;
+import com.haui.noteapp.listener.OnTaskActionListener;
 import com.haui.noteapp.model.Category;
 import com.haui.noteapp.model.Priority;
 import com.haui.noteapp.model.Task;
@@ -27,7 +28,7 @@ import com.haui.noteapp.util.PrioritySelector;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class TaskFragment extends Fragment {
+public class TaskFragment extends Fragment implements OnTaskActionListener {
 
     private FragmentTaskBinding binding;
     private TaskViewModel taskViewModel;
@@ -92,7 +93,7 @@ public class TaskFragment extends Fragment {
             for (Category c : categories) categoryMap.put(c.getId(), c);
         }
 
-        TaskAdapter adapter = new TaskAdapter(tasks, categoryMap, task -> showTaskDialog(task, true));
+        TaskAdapter adapter = new TaskAdapter(tasks, categoryMap, this);
         binding.recyclerTask.setAdapter(adapter);
 
         binding.progressBar.setVisibility(View.GONE);
@@ -220,6 +221,11 @@ public class TaskFragment extends Fragment {
 
     private void showToast(String msg) {
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onUpdate(Task task) {
+        taskViewModel.updateTask(task); // Update the task in Firestore
     }
 
     @Override
