@@ -71,4 +71,9 @@ public class PrioritySelector {
     public String getSelectedPriority() {
         return selectedPriority;
     }
+
+    public void setSelectedPriority(String selectedPriority) {
+        this.selectedPriority = selectedPriority;
+        setPriorityUI();
+    }
 }

@@ -73,6 +73,25 @@ public class TaskRepository {
                 });
     }
 
+    public void updateTask(Task task, IFirebaseCallbackListener<Void> callback) {
+        String userId = getUserId(callback);
+        if (userId == null || task.getId() == null) return;
+
+        task.setUserId(userId);
+        db.collection("tasks")
+                .document(task.getId())
+                .set(task)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Cập nhật task thành công");
+                    callback.onFirebaseLoadSuccess(null);
+                })
+                .addOnFailureListener(e -> {
+                    Log.d(TAG, "Cập nhật task thất bại: " + e.getMessage());
+                    callback.onFirebaseLoadFailed(e.getMessage());
+                });
+    }
+
+
     private String getUserId(IFirebaseCallbackListener<?> callback) {
         if (mAuth.getCurrentUser() == null) {
             Log.d(TAG, "Người dùng chưa đăng nhập");

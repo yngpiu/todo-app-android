@@ -20,13 +20,13 @@ import java.util.Map;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
     private final List<Task> tasks;
-    //    private final OnTaskActionListener listener;
-    private Map<String, Category> categoryMap;
+    private final OnTaskActionListener listener;
+    private final Map<String, Category> categoryMap;
 
-    public TaskAdapter(List<Task> tasks, Map<String, Category> categoryMap) {
+    public TaskAdapter(List<Task> tasks, Map<String, Category> categoryMap, OnTaskActionListener listener) {
         this.tasks = tasks;
         this.categoryMap = categoryMap;
-//        this.listener = listener;
+        this.listener = listener;
     }
 
     @NonNull
@@ -60,7 +60,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             popupMenu.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
                 if (itemId == R.id.action_edit) {
-                    // listener.onEditClicked(task);
+                    listener.onUpdate(task);
                     return true;
                 } else if (itemId == R.id.action_delete) {
                     // listener.onDeleteClicked(task);

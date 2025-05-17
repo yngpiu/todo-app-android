@@ -36,6 +36,7 @@ public class TaskViewModel extends ViewModel {
     public MediatorLiveData<Pair<List<Task>, List<Category>>> getCombinedData() {
         return combinedData;
     }
+
     public LiveData<List<Category>> getCategoryList() {
         return categoryList;
     }
@@ -74,6 +75,7 @@ public class TaskViewModel extends ViewModel {
             public void onFirebaseLoadSuccess(List<Category> data) {
                 categoryList.setValue(data);
             }
+
             @Override
             public void onFirebaseLoadFailed(String message) {
                 errorMessage.setValue(new Event<>(message));
@@ -108,6 +110,21 @@ public class TaskViewModel extends ViewModel {
             }
         });
     }
+
+    public void updateTask(Task task) {
+        repository.updateTask(task, new IFirebaseCallbackListener<>() {
+            @Override
+            public void onFirebaseLoadSuccess(Void data) {
+                actionMessage.postValue(new Event<>("Đã cập nhật nhiệm vụ"));
+            }
+
+            @Override
+            public void onFirebaseLoadFailed(String message) {
+                errorMessage.postValue(new Event<>(message));
+            }
+        });
+    }
+
 
     public void deleteTask(String taskId) {
 
