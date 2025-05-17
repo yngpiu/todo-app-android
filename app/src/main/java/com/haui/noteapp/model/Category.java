@@ -1,6 +1,10 @@
 package com.haui.noteapp.model;
 
+
+import com.google.firebase.firestore.Exclude;
+
 public class Category {
+    @Exclude
     private String id;
     private String name;
     private String colorHex;
@@ -17,6 +21,7 @@ public class Category {
         this.userId = userId;
     }
 
+    @Exclude
     public String getId() {
         return id;
     }
