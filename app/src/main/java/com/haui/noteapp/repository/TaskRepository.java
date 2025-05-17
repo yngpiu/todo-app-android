@@ -64,7 +64,6 @@ public class TaskRepository {
         Log.d(TAG, "Thêm task mới cho userId: " + userId);
         db.collection("tasks").add(task)
                 .addOnSuccessListener(ref -> {
-                    task.setId(ref.getId());
                     Log.d(TAG, "Thêm task thành công với id: " + ref.getId());
                     callback.onFirebaseLoadSuccess(null);
                 })

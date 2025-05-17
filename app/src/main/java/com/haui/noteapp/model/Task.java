@@ -1,8 +1,11 @@
 package com.haui.noteapp.model;
 
+import com.google.firebase.firestore.Exclude;
+
 import java.util.Date;
 
 public class Task {
+    @Exclude
     private String id;
     private String name;
     private Date douDate;
@@ -26,6 +29,7 @@ public class Task {
         this.priority = priority;
     }
 
+    @Exclude
     public String getId() {
         return id;
     }
