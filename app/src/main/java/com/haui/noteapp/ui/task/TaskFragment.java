@@ -56,7 +56,7 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
             return;
         }
         Task newTask = new Task();
-        newTask.setDouDate(new Date());
+        newTask.setDueDate(new Date());
         newTask.setPriority(Priority.MEDIUM.name());
         showTaskDialog(newTask, false);
     }
@@ -108,7 +108,7 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
         PrioritySelector prioritySelector = new PrioritySelector(dialogView);
 
         setupCategoryDropdown(inputCategory);
-        setupDatePicker(inputDueDate, task.getDouDate());
+        setupDatePicker(inputDueDate, task.getDueDate());
         bindTaskToForm(task, inputTitle, inputDueDate, inputCategory, prioritySelector);
 
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
@@ -168,7 +168,7 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
         }
 
         inputTitle.setText(task.getName());
-        inputDueDate.setText(DateUtil.formatDate(task.getDouDate()));
+        inputDueDate.setText(DateUtil.formatDate(task.getDueDate()));
         inputCategory.setText(idToName.getOrDefault(task.getCategoryId(), ""), false);
         prioritySelector.setSelectedPriority(Priority.fromKey(task.getPriority()).getLabel());
     }
@@ -209,7 +209,7 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
         }
 
         task.setName(title);
-        task.setDouDate(DateUtil.parseDate(dueDateStr));
+        task.setDueDate(DateUtil.parseDate(dueDateStr));
         task.setCategoryId(nameToId.get(categoryName));
         task.setPriority(Priority.fromLabel(selectedPriority).name());
         task.setUpdatedAt(new Date());

@@ -43,7 +43,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         Task task = tasks.get(position);
         holder.binding.tvTaskTitle.setText(task.getName());
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        holder.binding.tvTaskDate.setText(sdf.format(task.getDouDate()));
+        holder.binding.tvTaskDate.setText(sdf.format(task.getDueDate()));
         String categoryName = categoryMap.containsKey(task.getCategoryId())
                 ? categoryMap.get(task.getCategoryId()).getName()
                 : "Không rõ";
@@ -51,8 +51,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         String priorityKey = task.getPriority();
         String priorityLabel = Priority.fromKey(priorityKey).getLabel();
         holder.binding.tvTaskPriority.setText(priorityLabel);
+        holder.binding.tvTaskCategory.setText(categoryName);
 
-        // Apply strikethrough to title if task is completed
         if (task.isCompleted()) {
             holder.binding.tvTaskTitle.setPaintFlags(holder.binding.tvTaskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {

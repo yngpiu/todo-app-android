@@ -8,7 +8,7 @@ public class Task {
     @Exclude
     private String id;
     private String name;
-    private Date douDate;
+    private Date dueDate;
     private String categoryId;
     private String userId;
     private Date createdAt;
@@ -19,10 +19,10 @@ public class Task {
     public Task() {
     }
 
-    public Task(String id, String name, Date douDate, String categoryId, String userId, Date createdAt, Date updatedAt, String priority, boolean isCompleted) {
+    public Task(String id, String name, Date dueDate, String categoryId, String userId, Date createdAt, Date updatedAt, String priority, boolean isCompleted) {
         this.id = id;
         this.name = name;
-        this.douDate = douDate;
+        this.dueDate = dueDate;
         this.categoryId = categoryId;
         this.userId = userId;
         this.createdAt = createdAt;
@@ -49,12 +49,12 @@ public class Task {
         this.name = name;
     }
 
-    public Date getDouDate() {
-        return douDate;
+    public Date getDueDate() {
+        return dueDate;
     }
 
-    public void setDouDate(Date douDate) {
-        this.douDate = douDate;
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
     }
 
     public String getCategoryId() {
