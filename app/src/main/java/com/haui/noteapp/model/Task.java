@@ -7,6 +7,7 @@ public class Task {
     private String name;
     private Date douDate;
     private String categoryId;
+    private String userId;
     private Date createdAt;
     private Date updatedAt;
     private String priority;
@@ -14,11 +15,12 @@ public class Task {
     public Task() {
     }
 
-    public Task(String id, String name, Date douDate, String categoryId, Date createdAt, Date updatedAt, String priority) {
+    public Task(String id, String name, Date douDate, String categoryId, String userId, Date createdAt, Date updatedAt, String priority) {
         this.id = id;
         this.name = name;
         this.douDate = douDate;
         this.categoryId = categoryId;
+        this.userId = userId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.priority = priority;
@@ -54,6 +56,14 @@ public class Task {
 
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public Date getCreatedAt() {

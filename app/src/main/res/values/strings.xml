@@ -3,4 +3,5 @@
     <string name="title_task">Nhiệm vụ</string>
     <string name="title_category">Danh mục</string>
     <string name="title_statistic">Thống kê</string>
+    <string name="more_options">thêm\n</string>
 </resources>

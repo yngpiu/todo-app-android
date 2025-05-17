@@ -8,6 +8,7 @@ import com.haui.noteapp.model.Category;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class CategoryRepository {
 
@@ -47,13 +48,14 @@ public class CategoryRepository {
         if (userId == null) return;
 
         category.setUserId(userId);
-        db.collection("categories").add(category)
-                .addOnSuccessListener(ref -> {
-                    category.setId(ref.getId());
-                    callback.onFirebaseLoadSuccess(null);
-                })
+        String id = UUID.randomUUID().toString();
+        category.setId(id);
+
+        db.collection("categories").document(id).set(category)
+                .addOnSuccessListener(unused -> callback.onFirebaseLoadSuccess(null))
                 .addOnFailureListener(e -> callback.onFirebaseLoadFailed(e.getMessage()));
     }
+
 
     public void updateCategory(Category category, IFirebaseCallbackListener<Void> callback) {
         db.collection("categories").document(category.getId())
