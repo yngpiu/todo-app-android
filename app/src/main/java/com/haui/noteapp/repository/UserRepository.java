@@ -27,7 +27,6 @@ public class UserRepository {
                     }
 
                     String uid = firebaseUser.getUid();
-                    user.setId(uid);
                     user.setEmail(email);
 
                     Log.d(TAG, "Lưu thông tin user vào Firestore với id: " + uid);

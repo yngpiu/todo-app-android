@@ -1,6 +1,9 @@
 package com.haui.noteapp.model;
 
+import com.google.firebase.firestore.Exclude;
+
 public class User {
+    @Exclude
     private String id;
     private String email;
     private String displayName;
@@ -13,6 +16,8 @@ public class User {
         this.email = email;
         this.displayName = displayName;
     }
+
+    @Exclude
     public String getId() {
         return id;
     }
