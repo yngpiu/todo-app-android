@@ -14,11 +14,12 @@ public class Task {
     private Date createdAt;
     private Date updatedAt;
     private String priority;
+    private boolean isCompleted;
 
     public Task() {
     }
 
-    public Task(String id, String name, Date douDate, String categoryId, String userId, Date createdAt, Date updatedAt, String priority) {
+    public Task(String id, String name, Date douDate, String categoryId, String userId, Date createdAt, Date updatedAt, String priority, boolean isCompleted) {
         this.id = id;
         this.name = name;
         this.douDate = douDate;
@@ -27,6 +28,8 @@ public class Task {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.priority = priority;
+        this.isCompleted = isCompleted;
+
     }
 
     @Exclude
@@ -92,5 +95,13 @@ public class Task {
 
     public void setPriority(String priority) {
         this.priority = priority;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
     }
 }
