@@ -73,6 +73,30 @@ public class TaskRepository {
                 });
     }
 
+
+    public void deleteTask(String taskId, IFirebaseCallbackListener<Void> callback) {
+        if (taskId == null) {
+            Log.d(TAG, "Task ID is null, cannot delete");
+            callback.onFirebaseLoadFailed("Task ID không hợp lệ");
+            return;
+        }
+
+        String userId = getUserId(callback);
+        if (userId == null) return;
+
+        Log.d(TAG, "Xóa task với id: " + taskId);
+        db.collection("tasks")
+                .document(taskId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Xóa task thành công");
+                    callback.onFirebaseLoadSuccess(null);
+                })
+                .addOnFailureListener(e -> {
+                    Log.d(TAG, "Xóa task thất bại: " + e.getMessage());
+                    callback.onFirebaseLoadFailed(e.getMessage());
+                });
+    }
     public void updateTask(Task task, IFirebaseCallbackListener<Void> callback) {
         String userId = getUserId(callback);
         if (userId == null || task.getId() == null) return;

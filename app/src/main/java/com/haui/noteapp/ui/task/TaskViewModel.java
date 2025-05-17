@@ -123,11 +123,22 @@ public class TaskViewModel extends ViewModel {
                 errorMessage.postValue(new Event<>(message));
             }
         });
+
+
     }
 
-
     public void deleteTask(String taskId) {
+        repository.deleteTask(taskId, new IFirebaseCallbackListener<>() {
+            @Override
+            public void onFirebaseLoadSuccess(Void data) {
+                actionMessage.postValue(new Event<>("Đã xóa nhiệm vụ"));
+            }
 
+            @Override
+            public void onFirebaseLoadFailed(String message) {
+                errorMessage.postValue(new Event<>(message));
+            }
+        });
     }
 
 

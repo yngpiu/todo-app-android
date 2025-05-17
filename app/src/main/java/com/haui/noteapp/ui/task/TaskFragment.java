@@ -173,6 +173,20 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
         prioritySelector.setSelectedPriority(Priority.fromKey(task.getPriority()).getLabel());
     }
 
+    @Override
+    public void onDelete(Task task) {
+        // Show confirmation dialog before deleting
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Xác nhận xóa")
+                .setMessage("Bạn có chắc muốn xóa công việc '" + task.getName() + "' không?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    taskViewModel.deleteTask(task.getId()); // Delete task via ViewModel
+                    showToast("Đã xóa công việc");
+                })
+                .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
     private boolean handleSaveTask(Task task, TextInputEditText inputTitle, AutoCompleteTextView inputCategory,
                                    TextInputEditText inputDueDate, PrioritySelector prioritySelector, boolean isEdit) {
         String title = Optional.ofNullable(inputTitle.getText()).map(CharSequence::toString).orElse("").trim();

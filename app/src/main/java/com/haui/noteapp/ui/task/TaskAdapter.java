@@ -52,6 +52,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         String priorityLabel = Priority.fromKey(priorityKey).getLabel();
         holder.binding.tvTaskPriority.setText(priorityLabel);
 
+        // Apply strikethrough to title if task is completed
         if (task.isCompleted()) {
             holder.binding.tvTaskTitle.setPaintFlags(holder.binding.tvTaskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
@@ -63,9 +64,15 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
         // Add checkbox change listener
         holder.binding.cbComplete.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            task.setCompleted(isChecked);
+            task.setCompleted(isChecked); // Update the task's isCompleted field
             if (listener != null) {
-                listener.onUpdate(task);
+                listener.onUpdate(task); // Trigger update via listener
+            }
+            // Update strikethrough based on new isCompleted state
+            if (isChecked) {
+                holder.binding.tvTaskTitle.setPaintFlags(holder.binding.tvTaskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            } else {
+                holder.binding.tvTaskTitle.setPaintFlags(holder.binding.tvTaskTitle.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
             }
         });
 
@@ -79,7 +86,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                     listener.onUpdate(task);
                     return true;
                 } else if (itemId == R.id.action_delete) {
-                    // listener.onDeleteClicked(task);
+                    listener.onDelete(task); // Trigger delete via listener
                     return true;
                 }
                 return false;
