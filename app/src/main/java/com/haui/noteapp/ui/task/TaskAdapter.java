@@ -46,6 +46,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 ? categoryMap.get(task.getCategoryId()).getName()
                 : "Không rõ";
         holder.binding.tvTaskCategory.setText(categoryName);
+        holder.binding.tvTaskPriority.setText(task.getPriority());
+
+
         holder.binding.ivMore.setOnClickListener(v -> {
             android.widget.PopupMenu popupMenu = new android.widget.PopupMenu(v.getContext(), v);
             popupMenu.getMenuInflater().inflate(R.menu.task_menu, popupMenu.getMenu());

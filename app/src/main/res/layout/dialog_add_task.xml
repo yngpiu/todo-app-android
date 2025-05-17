@@ -88,7 +88,7 @@
                 android:backgroundTint="@android:color/transparent"
                 android:clickable="true"
                 android:focusable="true"
-                app:strokeColor="#d41e1e"
+                app:strokeColor="@color/high_priority"
                 app:strokeWidth="1.5dp">
 
                 <TextView
@@ -97,7 +97,7 @@
                     android:gravity="center"
                     android:paddingVertical="8dp"
                     android:text="Cao"
-                    android:textColor="#d41e1e"
+                    android:textColor="@color/high_priority"
                     android:textStyle="bold" />
             </com.google.android.material.card.MaterialCardView>
 
@@ -110,7 +110,7 @@
                 android:backgroundTint="@android:color/transparent"
                 android:clickable="true"
                 android:focusable="true"
-                app:strokeColor="#edb707"
+                app:strokeColor="@color/medium_priority"
                 app:strokeWidth="1.5dp">
 
                 <TextView
@@ -119,7 +119,7 @@
                     android:gravity="center"
                     android:paddingVertical="8dp"
                     android:text="Trung bình"
-                    android:textColor="#edb707"
+                    android:textColor="@color/medium_priority"
                     android:textStyle="bold" />
             </com.google.android.material.card.MaterialCardView>
 
@@ -132,7 +132,7 @@
                 android:backgroundTint="@android:color/transparent"
                 android:clickable="true"
                 android:focusable="true"
-                app:strokeColor="#29ed07"
+                app:strokeColor="@color/low_priority"
                 app:strokeWidth="1.5dp">
 
                 <TextView
@@ -141,7 +141,7 @@
                     android:gravity="center"
                     android:paddingVertical="8dp"
                     android:text="Thấp"
-                    android:textColor="#29ed07"
+                    android:textColor="@color/low_priority"
                     android:textStyle="bold" />
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>

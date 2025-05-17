@@ -6,9 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -58,24 +60,64 @@ public class TaskFragment extends Fragment {
         MaterialCardView cardPriorityMedium = dialogView.findViewById(R.id.card_priority_medium);
         MaterialCardView cardPriorityLow = dialogView.findViewById(R.id.card_priority_low);
 
+        final TextView textHigh = (TextView) cardPriorityHigh.getChildAt(0);
+        final TextView textMedium = (TextView) cardPriorityMedium.getChildAt(0);
+        final TextView textLow = (TextView) cardPriorityLow.getChildAt(0);
+
         final String[] priority = {"Thấp"};
+        cardPriorityLow.setChecked(true);
+        cardPriorityLow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.low_priority));
+        textLow.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white));
+
         cardPriorityHigh.setOnClickListener(v -> {
             priority[0] = "Cao";
             cardPriorityHigh.setChecked(true);
             cardPriorityMedium.setChecked(false);
             cardPriorityLow.setChecked(false);
+
+            // Set background to stroke color for selected card
+            cardPriorityHigh.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.high_priority));
+            cardPriorityMedium.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
+            cardPriorityLow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
+
+            // Adjust text colors for contrast
+            textHigh.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white));
+            textMedium.setTextColor(ContextCompat.getColor(requireContext(), R.color.medium_priority));
+            textLow.setTextColor(ContextCompat.getColor(requireContext(), R.color.low_priority));
         });
+
         cardPriorityMedium.setOnClickListener(v -> {
             priority[0] = "Trung bình";
             cardPriorityHigh.setChecked(false);
             cardPriorityMedium.setChecked(true);
             cardPriorityLow.setChecked(false);
+
+            // Set background to stroke color for selected card
+            cardPriorityHigh.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
+            cardPriorityMedium.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.medium_priority));
+            cardPriorityLow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
+
+            // Adjust text colors for contrast
+            textHigh.setTextColor(ContextCompat.getColor(requireContext(), R.color.high_priority));
+            textMedium.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white));
+            textLow.setTextColor(ContextCompat.getColor(requireContext(), R.color.low_priority));
         });
+
         cardPriorityLow.setOnClickListener(v -> {
             priority[0] = "Thấp";
             cardPriorityHigh.setChecked(false);
             cardPriorityMedium.setChecked(false);
             cardPriorityLow.setChecked(true);
+
+            // Set background to stroke color for selected card
+            cardPriorityHigh.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
+            cardPriorityMedium.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent));
+            cardPriorityLow.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.low_priority));
+
+            // Adjust text colors for contrast
+            textHigh.setTextColor(ContextCompat.getColor(requireContext(), R.color.high_priority));
+            textMedium.setTextColor(ContextCompat.getColor(requireContext(), R.color.medium_priority));
+            textLow.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white));
         });
 
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
