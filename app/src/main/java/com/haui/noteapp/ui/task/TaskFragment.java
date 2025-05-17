@@ -1,5 +1,6 @@
 package com.haui.noteapp.ui.task;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.haui.noteapp.R;
 import com.haui.noteapp.databinding.FragmentTaskBinding;
 import com.haui.noteapp.model.Category;
 import com.haui.noteapp.model.Task;
+import com.haui.noteapp.util.DateUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -103,58 +105,70 @@ public class TaskFragment extends Fragment {
             inputCategory.setThreshold(0);
 
             inputCategory.setOnClickListener(v -> inputCategory.showDropDown());
-            inputCategory.setOnFocusChangeListener((v, hasFocus) -> { if (hasFocus) inputCategory.showDropDown(); });
+            inputCategory.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) inputCategory.showDropDown();
+            });
 
-            new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
                     .setTitle("Thêm công việc mới")
                     .setView(dialogView)
-                    .setPositiveButton("Lưu", (dialog, which) -> {
-                        String title = inputTitle.getText() != null ? inputTitle.getText().toString().trim() : "";
-                        String categoryName = inputCategory.getText() != null ? inputCategory.getText().toString().trim() : "";
-                        String dueDateStr = inputDueDate.getText() != null ? inputDueDate.getText().toString().trim() : "";
+                    .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
 
-                        if (title.isEmpty()) {
-                            inputTitle.setError("Tiêu đề không được để trống");
-                            return;
-                        }
-                        if (categoryName.isEmpty()) {
-                            inputCategory.setError("Vui lòng chọn danh mục");
-                            return;
-                        }
-                        if (dueDateStr.isEmpty()) {
-                            inputDueDate.setError("Vui lòng chọn ngày đến hạn");
-                            return;
-                        }
+            if (categories != null && !categories.isEmpty()) {
+                builder.setPositiveButton("Lưu", null);
 
-                        Date dueDate;
-                        try {
-                            dueDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(dueDateStr);
-                        } catch (Exception e) {
-                            inputDueDate.setError("Ngày không hợp lệ");
-                            return;
-                        }
+                AlertDialog dialog = builder.create();
+                dialog.show();
 
-                        Task newTask = new Task();
-                        newTask.setName(title);
-                        newTask.setCategoryId(nameToId.get(categoryName));
-                        newTask.setDouDate(dueDate);
-                        newTask.setPriority(selectedPriority[0]);
-                        newTask.setUpdatedAt(new Date());
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                    String title = inputTitle.getText() != null ? inputTitle.getText().toString().trim() : "";
+                    String categoryName = inputCategory.getText() != null ? inputCategory.getText().toString().trim() : "";
+                    String dueDateStr = inputDueDate.getText() != null ? inputDueDate.getText().toString().trim() : "";
 
-                        taskViewModel.addTask(newTask);
-                        dialog.dismiss();
-                    })
-                    .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
-                    .show();
+                    if (title.isEmpty()) {
+                        Toast.makeText(requireContext(), "Tiêu đề không được để trống", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-        } else {
-            inputCategory.setEnabled(false);
-            inputCategory.setHint("Chưa có danh mục");
-            new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                    .setTitle("Thêm công việc mới")
-                    .setView(dialogView)
-                    .setPositiveButton("Hủy", (dialog, which) -> dialog.dismiss())
-                    .show();
+                    if (categoryName.isEmpty()) {
+                        Toast.makeText(requireContext(), "Vui lòng chọn danh mục", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (dueDateStr.isEmpty()) {
+                        Toast.makeText(requireContext(), "Vui lòng chọn ngày đến hạn", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (!DateUtil.isValidDate(dueDateStr)) {
+                        Toast.makeText(requireContext(), "Ngày không hợp lệ", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (selectedPriority[0] == null) {
+                        Toast.makeText(requireContext(), "Vui lòng chọn mức độ ưu tiên", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Date dueDate = DateUtil.parseDate(dueDateStr);
+
+                    Task newTask = new Task();
+                    newTask.setName(title);
+                    newTask.setCategoryId(nameToId.get(categoryName));
+                    newTask.setDouDate(dueDate);
+                    newTask.setPriority(selectedPriority[0]);
+                    newTask.setUpdatedAt(new Date());
+
+                    taskViewModel.addTask(newTask);
+                    dialog.dismiss();
+                });
+
+            } else {
+                builder.setPositiveButton("Hủy", (dialog, which) -> dialog.dismiss());
+                builder.create().show();
+            }
+
         }
     }
 
