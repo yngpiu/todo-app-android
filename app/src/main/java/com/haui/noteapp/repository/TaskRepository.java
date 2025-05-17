@@ -29,7 +29,6 @@ public class TaskRepository {
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         callback.onFirebaseLoadFailed(error.getMessage());
-                        Log.d("lỗi", error.getMessage());
                         return;
                     }
 

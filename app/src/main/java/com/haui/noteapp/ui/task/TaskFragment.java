@@ -45,17 +45,6 @@ public class TaskFragment extends Fragment {
             List<Task> tasks = pair.first;
             List<Category> categories = pair.second;
 
-            // 🔍 Log dữ liệu
-            Log.d("TaskFragment", "Tasks size: " + tasks.size());
-            for (Task task : tasks) {
-                Log.d("TaskFragment", "Task: " + task.getName() + " | CategoryId: " + task.getCategoryId());
-            }
-
-            Log.d("TaskFragment", "Categories size: " + categories.size());
-            for (Category category : categories) {
-                Log.d("TaskFragment", "Category: " + category.getId() + " - " + category.getName());
-            }
-
             binding.recyclerTask.setVisibility(View.GONE);
             binding.progressBar.setVisibility(View.VISIBLE);
 

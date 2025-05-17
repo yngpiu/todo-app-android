@@ -10,9 +10,6 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        Log.d(
-                "Firebase",
-                "Firebase persistence enabled"
-        );
+
     }
 }

@@ -110,7 +110,7 @@ public class TaskViewModel extends ViewModel {
     }
 
     public void deleteTask(String taskId) {
-        Log.d("task", taskId);
+
     }
 
 
