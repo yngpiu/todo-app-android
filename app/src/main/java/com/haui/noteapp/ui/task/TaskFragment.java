@@ -32,6 +32,8 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
 
     private FragmentTaskBinding binding;
     private TaskViewModel taskViewModel;
+    private AutoCompleteTextView filterCategory;
+    private AutoCompleteTextView filterPriority;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,6 +49,68 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
     private void initUI() {
         binding.fabAddTask.setOnClickListener(v -> onAddTaskClicked());
         setupRecyclerView();
+
+        // Initialize filter views
+        filterCategory = binding.filterCategory;
+        filterPriority = binding.filterPriority;
+
+        // Set up filters
+        setupCategoryFilter();
+        setupPriorityFilter();
+    }
+
+    private void setupCategoryFilter() {
+        taskViewModel.getCategoryList().observe(getViewLifecycleOwner(), categories -> {
+            if (categories != null && !categories.isEmpty()) {
+                List<String> categoryNames = new ArrayList<>();
+                categoryNames.add("Tất cả"); // Add "All" option
+                for (Category category : categories) {
+                    categoryNames.add(category.getName());
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryNames);
+                filterCategory.setAdapter(adapter);
+                filterCategory.setText("Tất cả", false); // Default to "All"
+                filterCategory.setOnItemClickListener((parent, view, position, id) -> applyFilters());
+            } else {
+                filterCategory.setText("Tất cả", false); // Default to "All" if no categories
+            }
+        });
+    }
+
+    private void setupPriorityFilter() {
+        List<String> priorityLabels = new ArrayList<>();
+        priorityLabels.add("Tất cả"); // Add "All" option
+        priorityLabels.add(Priority.HIGH.getLabel());    // "Cao"
+        priorityLabels.add(Priority.MEDIUM.getLabel());  // "Trung bình"
+        priorityLabels.add(Priority.LOW.getLabel());     // "Thấp"
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, priorityLabels);
+        filterPriority.setAdapter(adapter);
+        filterPriority.setText("Tất cả", false); // Default to "All"
+        filterPriority.setOnItemClickListener((parent, view, position, id) -> applyFilters());
+    }
+
+    private void applyFilters() {
+        String selectedCategory = filterCategory.getText().toString();
+        String selectedPriority = filterPriority.getText().toString();
+
+        taskViewModel.getCombinedData().observe(getViewLifecycleOwner(), pair -> {
+            List<Task> tasks = pair.first != null ? pair.first : new ArrayList<>(); // Ensure tasks is not null
+            List<Category> categories = pair.second;
+
+            List<Task> filteredTasks = new ArrayList<>();
+            for (Task task : tasks) {
+                boolean categoryMatch = "Tất cả".equals(selectedCategory) ||
+                        (categories != null && categories.stream().anyMatch(c -> c.getName().equals(selectedCategory) && c.getId().equals(task.getCategoryId())));
+                boolean priorityMatch = "Tất cả".equals(selectedPriority) ||
+                        Priority.fromLabel(selectedPriority).name().equals(task.getPriority());
+
+                if (categoryMatch && priorityMatch) {
+                    filteredTasks.add(task);
+                }
+            }
+
+            updateTaskList(filteredTasks, categories);
+        });
     }
 
     private void onAddTaskClicked() {
@@ -67,20 +131,25 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
 
     private void setupObservers() {
         taskViewModel.getCombinedData().observe(getViewLifecycleOwner(), pair -> {
-            List<Task> tasks = pair.first;
-            List<Category> categories = pair.second;
-
-            updateTaskList(tasks, categories);
+            List<Task> tasks = pair.first != null ? pair.first : new ArrayList<>();
+            List<Category> categories = pair.second != null ? pair.second : new ArrayList<>();
+            // Apply filters when data changes
+            applyFilters();
         });
 
         taskViewModel.getErrorMessage().observe(getViewLifecycleOwner(), event -> {
             String msg = event.getContentIfNotHandled();
-            if (msg != null) showToast(msg);
+            if (msg != null) {
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+            }
         });
 
         taskViewModel.getActionMessage().observe(getViewLifecycleOwner(), event -> {
             String msg = event.getContentIfNotHandled();
-            if (msg != null) showToast(msg);
+            if (msg != null) {
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+                applyFilters(); // Reapply filters after action (e.g., add/update/delete)
+            }
         });
     }
 
@@ -175,12 +244,11 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
 
     @Override
     public void onDelete(Task task) {
-        // Show confirmation dialog before deleting
         new AlertDialog.Builder(requireContext())
                 .setTitle("Xác nhận xóa")
                 .setMessage("Bạn có chắc muốn xóa công việc '" + task.getName() + "' không?")
                 .setPositiveButton("Xóa", (dialog, which) -> {
-                    taskViewModel.deleteTask(task.getId()); // Delete task via ViewModel
+                    taskViewModel.deleteTask(task.getId());
                     showToast("Đã xóa công việc");
                 })
                 .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
@@ -189,7 +257,7 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
 
     @Override
     public void onCompleteTask(Task task) {
-        taskViewModel.updateTask(task); // Update only the isCompleted status
+        taskViewModel.updateTask(task);
     }
 
     private boolean handleSaveTask(Task task, TextInputEditText inputTitle, AutoCompleteTextView inputCategory,
@@ -244,7 +312,7 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
 
     @Override
     public void onUpdate(Task task) {
-        showTaskDialog(task, true); // Open edit dialog
+        showTaskDialog(task, true);
     }
 
     @Override
