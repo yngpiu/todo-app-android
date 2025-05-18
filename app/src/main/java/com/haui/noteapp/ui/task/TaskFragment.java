@@ -34,6 +34,8 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
     private TaskViewModel taskViewModel;
     private AutoCompleteTextView filterCategory;
     private AutoCompleteTextView filterPriority;
+    private boolean isNotCompletedExpanded = true;
+    private boolean isCompletedExpanded = true;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,7 +50,6 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
 
     private void initUI() {
         binding.fabAddTask.setOnClickListener(v -> onAddTaskClicked());
-        setupRecyclerView();
 
         // Initialize filter views
         filterCategory = binding.filterCategory;
@@ -57,35 +58,62 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
         // Set up filters
         setupCategoryFilter();
         setupPriorityFilter();
+
+        // Set up RecyclerViews
+        setupRecyclerViews();
+
+        // Set up collapsible headers
+        setupCollapsibleHeaders();
+    }
+
+    private void setupRecyclerViews() {
+        binding.recyclerNotCompleted.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerCompleted.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    private void setupCollapsibleHeaders() {
+        // Not Completed Header
+        binding.headerNotCompleted.setOnClickListener(v -> {
+            isNotCompletedExpanded = !isNotCompletedExpanded;
+            binding.recyclerNotCompleted.setVisibility(isNotCompletedExpanded ? View.VISIBLE : View.GONE);
+            binding.ivNotCompletedToggle.setRotation(isNotCompletedExpanded ? 0 : -90); // Rotate icon to indicate state
+        });
+
+        // Completed Header
+        binding.headerCompleted.setOnClickListener(v -> {
+            isCompletedExpanded = !isCompletedExpanded;
+            binding.recyclerCompleted.setVisibility(isCompletedExpanded ? View.VISIBLE : View.GONE);
+            binding.ivCompletedToggle.setRotation(isCompletedExpanded ? 0 : -90); // Rotate icon to indicate state
+        });
     }
 
     private void setupCategoryFilter() {
         taskViewModel.getCategoryList().observe(getViewLifecycleOwner(), categories -> {
             if (categories != null && !categories.isEmpty()) {
                 List<String> categoryNames = new ArrayList<>();
-                categoryNames.add("Tất cả"); // Add "All" option
+                categoryNames.add("Tất cả");
                 for (Category category : categories) {
                     categoryNames.add(category.getName());
                 }
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryNames);
                 filterCategory.setAdapter(adapter);
-                filterCategory.setText("Tất cả", false); // Default to "All"
+                filterCategory.setText("Tất cả", false);
                 filterCategory.setOnItemClickListener((parent, view, position, id) -> applyFilters());
             } else {
-                filterCategory.setText("Tất cả", false); // Default to "All" if no categories
+                filterCategory.setText("Tất cả", false);
             }
         });
     }
 
     private void setupPriorityFilter() {
         List<String> priorityLabels = new ArrayList<>();
-        priorityLabels.add("Tất cả"); // Add "All" option
-        priorityLabels.add(Priority.HIGH.getLabel());    // "Cao"
-        priorityLabels.add(Priority.MEDIUM.getLabel());  // "Trung bình"
-        priorityLabels.add(Priority.LOW.getLabel());     // "Thấp"
+        priorityLabels.add("Tất cả");
+        priorityLabels.add(Priority.HIGH.getLabel());
+        priorityLabels.add(Priority.MEDIUM.getLabel());
+        priorityLabels.add(Priority.LOW.getLabel());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, priorityLabels);
         filterPriority.setAdapter(adapter);
-        filterPriority.setText("Tất cả", false); // Default to "All"
+        filterPriority.setText("Tất cả", false);
         filterPriority.setOnItemClickListener((parent, view, position, id) -> applyFilters());
     }
 
@@ -94,8 +122,8 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
         String selectedPriority = filterPriority.getText().toString();
 
         taskViewModel.getCombinedData().observe(getViewLifecycleOwner(), pair -> {
-            List<Task> tasks = pair.first != null ? pair.first : new ArrayList<>(); // Ensure tasks is not null
-            List<Category> categories = pair.second;
+            List<Task> tasks = pair.first != null ? pair.first : new ArrayList<>();
+            List<Category> categories = pair.second != null ? pair.second : new ArrayList<>();
 
             List<Task> filteredTasks = new ArrayList<>();
             for (Task task : tasks) {
@@ -109,31 +137,14 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
                 }
             }
 
-            updateTaskList(filteredTasks, categories);
+            updateTaskLists(filteredTasks, categories);
         });
-    }
-
-    private void onAddTaskClicked() {
-        List<Category> categories = taskViewModel.getCategoryList().getValue();
-        if (categories == null || categories.isEmpty()) {
-            Toast.makeText(requireContext(), "Chưa có danh mục nào. Vui lòng tạo danh mục trước.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Task newTask = new Task();
-        newTask.setDueDate(new Date());
-        newTask.setPriority(Priority.MEDIUM.name());
-        showTaskDialog(newTask, false);
-    }
-
-    private void setupRecyclerView() {
-        binding.recyclerTask.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     private void setupObservers() {
         taskViewModel.getCombinedData().observe(getViewLifecycleOwner(), pair -> {
             List<Task> tasks = pair.first != null ? pair.first : new ArrayList<>();
             List<Category> categories = pair.second != null ? pair.second : new ArrayList<>();
-            // Apply filters when data changes
             applyFilters();
         });
 
@@ -148,25 +159,52 @@ public class TaskFragment extends Fragment implements OnTaskActionListener {
             String msg = event.getContentIfNotHandled();
             if (msg != null) {
                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
-                applyFilters(); // Reapply filters after action (e.g., add/update/delete)
+                applyFilters();
             }
         });
     }
 
-    private void updateTaskList(List<Task> tasks, List<Category> categories) {
-        binding.progressBar.setVisibility(View.VISIBLE);
-        binding.recyclerTask.setVisibility(View.GONE);
+    private void updateTaskLists(List<Task> tasks, List<Category> categories) {
+        binding.progressBar.setVisibility(View.GONE);
 
         Map<String, Category> categoryMap = new HashMap<>();
         if (categories != null) {
             for (Category c : categories) categoryMap.put(c.getId(), c);
         }
 
-        TaskAdapter adapter = new TaskAdapter(tasks, categoryMap, this);
-        binding.recyclerTask.setAdapter(adapter);
+        // Split tasks into completed and not completed
+        List<Task> notCompletedTasks = new ArrayList<>();
+        List<Task> completedTasks = new ArrayList<>();
 
-        binding.progressBar.setVisibility(View.GONE);
-        binding.recyclerTask.setVisibility(View.VISIBLE);
+        for (Task task : tasks) {
+            if (task.isCompleted()) {
+                completedTasks.add(task);
+            } else {
+                notCompletedTasks.add(task);
+            }
+        }
+
+        // Update Not Completed RecyclerView
+        TaskAdapter notCompletedAdapter = new TaskAdapter(notCompletedTasks, categoryMap, this);
+        binding.recyclerNotCompleted.setAdapter(notCompletedAdapter);
+        binding.recyclerNotCompleted.setVisibility(isNotCompletedExpanded ? View.VISIBLE : View.GONE);
+
+        // Update Completed RecyclerView
+        TaskAdapter completedAdapter = new TaskAdapter(completedTasks, categoryMap, this);
+        binding.recyclerCompleted.setAdapter(completedAdapter);
+        binding.recyclerCompleted.setVisibility(isCompletedExpanded ? View.VISIBLE : View.GONE);
+    }
+
+    private void onAddTaskClicked() {
+        List<Category> categories = taskViewModel.getCategoryList().getValue();
+        if (categories == null || categories.isEmpty()) {
+            Toast.makeText(requireContext(), "Chưa có danh mục nào. Vui lòng tạo danh mục trước.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Task newTask = new Task();
+        newTask.setDueDate(new Date());
+        newTask.setPriority(Priority.MEDIUM.name());
+        showTaskDialog(newTask, false);
     }
 
     private void showTaskDialog(Task task, boolean isEdit) {
