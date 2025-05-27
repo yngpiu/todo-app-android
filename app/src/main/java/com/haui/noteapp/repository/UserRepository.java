@@ -1,6 +1,7 @@
 package com.haui.noteapp.repository;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.haui.noteapp.listener.IFirebaseCallbackListener;
@@ -42,7 +43,13 @@ public class UserRepository {
                 })
                 .addOnFailureListener(e -> {
                     Log.d(TAG, "Đăng ký thất bại: " + e.getMessage());
-                    callback.onFirebaseLoadFailed(e.getMessage());
+
+                    String message;
+                    if(((FirebaseAuthException) e).getErrorCode() == "ERROR_EMAIL_ALREADY_IN_USE")
+                        message = "Email này đã được sử dụng!";
+                    else message = "Đăng ký thất bại";
+
+                    callback.onFirebaseLoadFailed(message);
                 });
     }
 
@@ -61,7 +68,11 @@ public class UserRepository {
                 })
                 .addOnFailureListener(e -> {
                     Log.d(TAG, "Đăng nhập thất bại: " + e.getMessage());
-                    callback.onFirebaseLoadFailed(e.getMessage());
+                    String message;
+                    if(((FirebaseAuthException) e).getErrorCode() == "ERROR_INVALID_CREDENTIAL")
+                        message = "Email hoặc mật khẩu không đúng!";
+                    else message = "Đăng nhập thất bại";
+                    callback.onFirebaseLoadFailed(message);
                 });
     }
 
