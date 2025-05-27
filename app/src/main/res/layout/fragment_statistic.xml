@@ -170,26 +170,26 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
     <!-- Tiêu đề biểu đồ -->
-    <TextView
-        android:id="@+id/tv_chart_title"
-        android:layout_width="wrap_content"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tasks by Priority"
-        android:textSize="18sp"
-        android:textStyle="bold"
         android:layout_marginTop="16dp"
+        app:tabMode="auto"
+        app:tabGravity="fill"
         app:layout_constraintTop_toBottomOf="@id/card_completed"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="16dp" />
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/pie_chart"
-        android:layout_width="0dp"
-        android:layout_height="300dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_chart_title"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/tab_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.6" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

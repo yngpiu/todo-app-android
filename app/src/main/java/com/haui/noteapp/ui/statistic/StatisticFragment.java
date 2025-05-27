@@ -10,6 +10,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -18,12 +20,16 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+import com.haui.noteapp.R;
 import com.haui.noteapp.databinding.FragmentStatisticBinding;
 import com.haui.noteapp.model.Priority;
 import com.haui.noteapp.model.StatisticData;
 import com.haui.noteapp.util.Event;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class StatisticFragment extends Fragment {
@@ -44,7 +50,23 @@ public class StatisticFragment extends Fragment {
         TextView tvCompletionRateValue = binding.tvCompletionRateValue;
         TextView tvCompletedValue = binding.tvCompletedValue;
         TextView tvPendingValue = binding.tvPendingValue;
-        PieChart pieChart = binding.pieChart;
+
+        // Setup TabLayout and ViewPager2
+        TabLayout tabLayout = binding.tabLayout;
+        ViewPager2 viewPager = binding.viewPager;
+        ViewPagerAdapter adapter = new ViewPagerAdapter(inflater, this);
+        viewPager.setAdapter(adapter);
+
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            switch (position) {
+                case 0:
+                    tab.setText("Theo ưu tiên");
+                    break;
+                case 1:
+                    tab.setText("Khác");
+                    break;
+            }
+        }).attach();
 
         // Observe statistic data
         statisticViewModel.getStatisticData().observe(getViewLifecycleOwner(), statistic -> {
@@ -53,13 +75,6 @@ public class StatisticFragment extends Fragment {
                 tvCompletionRateValue.setText(statistic.getCompletionRate() + "%");
                 tvCompletedValue.setText(String.valueOf(statistic.getCompleted()));
                 tvPendingValue.setText(String.valueOf(statistic.getPending()));
-            }
-        });
-
-        // Observe priority stats and update PieChart
-        statisticViewModel.getPriorityStats().observe(getViewLifecycleOwner(), priorityStats -> {
-            if (priorityStats != null) {
-                updatePieChart(pieChart, priorityStats);
             }
         });
 
@@ -72,6 +87,57 @@ public class StatisticFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewHolder> {
+        private final LayoutInflater inflater;
+        private final List<Integer> layouts;
+        private final StatisticFragment fragment;
+
+        ViewPagerAdapter(LayoutInflater inflater, StatisticFragment fragment) {
+            this.inflater = inflater;
+            this.fragment = fragment;
+            this.layouts = new ArrayList<>();
+            layouts.add(R.layout.chart_priority); // Tab 1: Priority Chart
+            layouts.add(R.layout.chart_placeholder); // Tab 2: Placeholder
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = inflater.inflate(viewType, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            if (position == 0) {
+                // Tab 1: Priority Chart
+                PieChart pieChart = holder.itemView.findViewById(R.id.pie_chart);
+                statisticViewModel.getPriorityStats().observe(fragment.getViewLifecycleOwner(), priorityStats -> {
+                    if (priorityStats != null) {
+                        fragment.updatePieChart(pieChart, priorityStats);
+                    }
+                });
+            }
+            // Tab 2: Placeholder không cần logic
+        }
+
+        @Override
+        public int getItemCount() {
+            return layouts.size();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return layouts.get(position);
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            ViewHolder(View itemView) {
+                super(itemView);
+            }
+        }
     }
 
     private void updatePieChart(PieChart pieChart, Map<String, Integer> priorityStats) {
@@ -90,11 +156,12 @@ public class StatisticFragment extends Fragment {
 
         pieChart.setVisibility(View.VISIBLE);
 
-        PieDataSet dataSet = new PieDataSet(entries, "");
+        PieDataSet dataSet = new PieDataSet(entries, ""); // Nhãn rỗng để ẩn "Tasks by Priority"
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        dataSet.setValueTextSize(16f); // Kích thước chữ 16sp
         dataSet.setValueTextColor(android.graphics.Color.WHITE);
-        dataSet.setValueTextSize(18f);
 
+        // Định dạng giá trị thành số nguyên
         dataSet.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
@@ -107,9 +174,9 @@ public class StatisticFragment extends Fragment {
 
         // Customize PieChart
         pieChart.getDescription().setEnabled(false);
-        pieChart.setCenterTextSize(14f);
         pieChart.setDrawEntryLabels(false);
 
+        // Căn giữa chú thích (legend)
         Legend legend = pieChart.getLegend();
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
