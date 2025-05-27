@@ -8,6 +8,9 @@ import com.haui.noteapp.listener.IFirebaseCallbackListener;
 import com.haui.noteapp.model.StatisticData;
 import com.haui.noteapp.model.Task;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class StatisticRepository {
 
     private static final String TAG = "StatisticRepository";
@@ -48,6 +51,35 @@ public class StatisticRepository {
     }
 
 
+    public void getTaskPriorityStats(IFirebaseCallbackListener<Map<String, Integer>> callback) {
+        String userId = getUserId(callback);
+        if (userId == null) return;
+
+        db.collection("tasks")
+                .whereEqualTo("userId", userId)
+                .addSnapshotListener((snapshot, error) -> {
+                    if (error != null) {
+                        Log.d(TAG, "Lỗi khi lấy thống kê ưu tiên: " + error.getMessage());
+                        callback.onFirebaseLoadFailed(error.getMessage());
+                        return;
+                    }
+
+                    if (snapshot != null) {
+                        Map<String, Integer> priorityStats = new HashMap<>();
+                        priorityStats.put("HIGH", 0);
+                        priorityStats.put("MEDIUM", 0);
+                        priorityStats.put("LOW", 0);
+
+                        for (var doc : snapshot) {
+                            Task task = doc.toObject(Task.class);
+                            String priority = task.getPriority();
+                            priorityStats.put(priority, priorityStats.getOrDefault(priority, 0) + 1);
+                        }
+
+                        callback.onFirebaseLoadSuccess(priorityStats);
+                    }
+                });
+    }
     private String getUserId(IFirebaseCallbackListener<?> callback) {
         if (mAuth.getCurrentUser() == null) {
             Log.d(TAG, "Người dùng chưa đăng nhập");

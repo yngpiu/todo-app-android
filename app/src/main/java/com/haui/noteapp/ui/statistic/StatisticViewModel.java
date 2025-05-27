@@ -9,18 +9,26 @@ import com.haui.noteapp.model.StatisticData;
 import com.haui.noteapp.repository.StatisticRepository;
 import com.haui.noteapp.util.Event;
 
+import java.util.Map;
+
 public class StatisticViewModel extends ViewModel {
 
     private final MutableLiveData<StatisticData> statisticData = new MutableLiveData<>();
+    private final MutableLiveData<Map<String, Integer>> priorityStats = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> errorMessage = new MutableLiveData<>();
     private final StatisticRepository repository = new StatisticRepository();
 
     public StatisticViewModel() {
         loadStatistics();
+        loadPriorityStats();
     }
 
     public LiveData<StatisticData> getStatisticData() {
         return statisticData;
+    }
+
+    public LiveData<Map<String, Integer>> getPriorityStats() {
+        return priorityStats;
     }
 
     public LiveData<Event<String>> getErrorMessage() {
@@ -32,6 +40,20 @@ public class StatisticViewModel extends ViewModel {
             @Override
             public void onFirebaseLoadSuccess(StatisticData data) {
                 statisticData.setValue(data);
+            }
+
+            @Override
+            public void onFirebaseLoadFailed(String message) {
+                errorMessage.setValue(new Event<>(message));
+            }
+        });
+    }
+
+    private void loadPriorityStats() {
+        repository.getTaskPriorityStats(new IFirebaseCallbackListener<Map<String, Integer>>() {
+            @Override
+            public void onFirebaseLoadSuccess(Map<String, Integer> data) {
+                priorityStats.setValue(data);
             }
 
             @Override
