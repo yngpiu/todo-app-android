@@ -56,11 +56,20 @@
                     android:textSize="13sp" />
 
                 <!-- Date -->
+                <!-- 👇 Icon lịch -->
+                <ImageView
+                    android:id="@+id/iv_task_date_icon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_calendar" />
+
+                <!-- 👇 Ngày -->
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_task_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="4dp"
                     android:text="23/06/2005"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="13sp" />
