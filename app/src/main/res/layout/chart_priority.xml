@@ -6,54 +6,47 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- CardView bọc toàn bộ nội dung -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_pie_chart"
+    <!-- Thay MaterialCardView bằng LinearLayout -->
+    <LinearLayout
+        android:id="@+id/container_pie_chart"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardElevation="4dp"
-        app:cardCornerRadius="12dp"
+        android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        style="?attr/materialCardViewFilledStyle">
+        android:layout_margin="4dp"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        android:layout_marginBottom="8dp">
 
-        <!-- Nội dung bên trong Card -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Tiêu đề -->
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:text="Mục độ ưu tiên"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000" />
 
-            <!-- Tiêu đề -->
-            <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Task Importance"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#000000" />
+        <!-- Subtext -->
+        <TextView
+            android:id="@+id/tv_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thống kê số lượng nhiệm vụ theo mức độ ưu tiên"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp" />
 
-            <!-- Subtext -->
-            <TextView
-                android:id="@+id/tv_subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Distribution of tasks by importance level"
-                android:textSize="14sp"
-                android:textColor="#666666"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="12dp" />
+        <!-- Pie Chart -->
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pie_chart"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
 
-            <!-- Pie Chart -->
-            <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/pie_chart"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
-
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
