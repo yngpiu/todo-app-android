@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.haui.noteapp.R;
@@ -34,7 +35,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     @Override
     public TaskAdapter.TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemTaskBinding binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-
         return new TaskViewHolder(binding);
     }
 
@@ -47,12 +47,25 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         String categoryName = categoryMap.containsKey(task.getCategoryId())
                 ? categoryMap.get(task.getCategoryId()).getName()
                 : "Không rõ";
-
         String priorityKey = task.getPriority();
         String priorityLabel = Priority.fromKey(priorityKey).getLabel();
         holder.binding.tvTaskPriority.setText(priorityLabel);
         holder.binding.tvTaskCategory.setText(categoryName);
 
+        // Set category color circle
+        if (categoryMap.containsKey(task.getCategoryId())) {
+            String colorHex = categoryMap.get(task.getCategoryId()).getColorHex();
+            if (colorHex != null && !colorHex.isEmpty()) {
+                holder.binding.ivCategoryColor.setColorFilter(android.graphics.Color.parseColor(colorHex));
+            } else {
+                holder.binding.ivCategoryColor.setColorFilter(android.graphics.Color.GRAY); // Màu mặc định nếu không có
+            }
+        } else {
+            holder.binding.ivCategoryColor.setColorFilter(android.graphics.Color.GRAY); // Màu mặc định nếu không tìm thấy danh mục
+        }
+
+        int priorityColor = getPriorityColor(priorityKey, holder.itemView.getContext());
+        holder.binding.tvTaskPriority.setTextColor(priorityColor);
         if (task.isCompleted()) {
             holder.binding.tvTaskTitle.setPaintFlags(holder.binding.tvTaskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
@@ -64,11 +77,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
         // Add checkbox change listener
         holder.binding.cbComplete.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            task.setCompleted(isChecked); // Update the task's isCompleted field
+            task.setCompleted(isChecked);
             if (listener != null) {
-                listener.onCompleteTask(task); // Trigger completion update
+                listener.onCompleteTask(task);
             }
-            // Update strikethrough based on new isCompleted state
             if (isChecked) {
                 holder.binding.tvTaskTitle.setPaintFlags(holder.binding.tvTaskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
@@ -83,10 +95,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             popupMenu.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
                 if (itemId == R.id.action_edit) {
-                    listener.onUpdate(task); // Open edit dialog
+                    listener.onUpdate(task);
                     return true;
                 } else if (itemId == R.id.action_delete) {
-                    listener.onDelete(task); // Trigger delete
+                    listener.onDelete(task);
                     return true;
                 }
                 return false;
@@ -101,6 +113,18 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         return tasks.size();
     }
 
+    private int getPriorityColor(String priorityKey, android.content.Context context) {
+        switch (priorityKey != null ? priorityKey : "") {
+            case "HIGH":
+                return ContextCompat.getColor(context, R.color.high_priority);
+            case "MEDIUM":
+                return ContextCompat.getColor(context, R.color.medium_priority);
+            case "LOW":
+                return ContextCompat.getColor(context, R.color.low_priority);
+            default:
+                return ContextCompat.getColor(context, R.color.high_priority); // Mặc định dùng màu high nếu không xác định
+        }
+    }
     public static class TaskViewHolder extends RecyclerView.ViewHolder {
         ItemTaskBinding binding;
 
