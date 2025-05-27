@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.appbar.MaterialToolbar;
-import com.haui.noteapp.MainActivity;
 import com.haui.noteapp.databinding.ActivitySettingBinding;
 import com.haui.noteapp.ui.login.LoginActivity;
 

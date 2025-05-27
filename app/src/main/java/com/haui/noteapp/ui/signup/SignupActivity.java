@@ -8,7 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.haui.noteapp.MainActivity;
+import com.haui.noteapp.ui.MainActivity;
 import com.haui.noteapp.databinding.ActivitySignupBinding;
 import com.haui.noteapp.model.User;
 import com.haui.noteapp.ui.login.LoginActivity;
