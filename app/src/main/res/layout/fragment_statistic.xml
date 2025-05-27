@@ -149,7 +149,7 @@
             android:orientation="vertical"
             android:gravity="center"
             android:padding="12dp"
-            android:background="@android:color/holo_orange_light">
+            android:background="#CCE5FF">
 
             <TextView
                 android:id="@+id/tv_pending_label"
